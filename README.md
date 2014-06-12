@@ -11,7 +11,7 @@ npm install -g multiview
 ```
 
 ### Usage Example
-This utility is used from the command line using pipes and
+This utility is used from the command line by starting an instance and then piping stdouts to other terminal instances of the utility.
 
 ```bash
 multiview & node processA.js | multiview -t & node processB.js | multiview -t
@@ -20,7 +20,6 @@ multiview & node processA.js | multiview -t & node processB.js | multiview -t
 ### Options
 ```bash
  Options:
-
     -h, --help             output usage information
     -V, --version          output the version number
     -p, --presenter        make it a presenter instance
@@ -33,6 +32,25 @@ multiview & node processA.js | multiview -t & node processB.js | multiview -t
 There are two types of instances of multiview. One is a presenter `multiview` and the other is a terminal `multiview -t`. You pipe your concurrent processes
 
 Whatever is piped to a terminal gets pushed to a UNIX socket and that socket in turn is read and formatted by the presenter.
+
+## See it in Action
+Switch to the module directory and run `npm test`
+```
+npm install multiview
+cd node_modules/multiview
+npm test
+```
+
+
+## Advanced
+
+### Channels
+You can have multiple instances of multiview running on different channels. Just start a new channel presenter and pipe stdouts to terminals with that same channel, both using the `-c` or `--channel` option set to the same value.
+
+```bash
+multiview -c special & node processA.js | multiview -t -c special & node processB.js | multiview -t -c special
+```
+
 
 ## License
 The MIT License (MIT)

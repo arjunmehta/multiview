@@ -28,6 +28,8 @@
   "dependencies": {
     "columnify": "^1.1.0",
     "commander": "^2.2.0",
-    "keypress": "^0.2.1"
+    "keypress": "^0.2.1",
+    "wcwidth.js": "0.0.4",
+    "strip-ansi": "^0.2.2"
   }
 }
