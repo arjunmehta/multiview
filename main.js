@@ -10,10 +10,10 @@ var app;
 
 
 program
-  .version('0.0.1')
-  .option('-n, --num_columns [num]', 'limit the number of columns to display at a time (default: max)', 'max')
-  .option('-e, --efficient [num]', 'make the display efficient', 'efficient:max')
+  .version('0.1.0')
   .option('-s, --stream [name]', "make it a stream with an optional name. (default: the stream's PID)")
+  .option('-n, --num_columns [num]', 'limit the number of columns to display at a time (default: max)', 'max')
+  .option('-e, --efficient [num]', 'if this is a display, make it operate efficiently', 'efficient:max')  
   .option('-c, --channel [name]', 'specify channel name. (default: multiview_main)', 'multiview_main')
   .parse(process.argv);
 
