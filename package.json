@@ -26,7 +26,6 @@
   },
   "homepage": "https://github.com/arjunmehta/node-multiview",
   "dependencies": {
-    "columnify": "^1.1.0",
     "commander": "^2.2.0",
     "keypress": "^0.2.1",
     "wcwidth.js": "0.0.4",

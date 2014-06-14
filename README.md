@@ -1,54 +1,88 @@
-node-multiview
-==============
+# node-multiview (Unpublished)
 
-A terminal utility that channels multiple stdouts and presents them neatly in a navigable column view.
+**Note: This module has not been published on npm yet, and is in preliminary development**
 
-## Basic Use
+A terminal utility that channels multiple stdouts to present them neatly in a navigable column view.
+
+## Getting Started
 
 ### Installation
 ```bash
 npm install -g multiview
 ```
 
-### Usage Example
-This utility is used from the command line by starting an instance and then piping stdouts to other terminal instances of the utility.
-
+#### Usage Example
 ```bash
-multiview & node processA.js | multiview -t & node processB.js | multiview -t
+(while true; do echo 12; sleep 1; done) | multiview -s StreamA & \
+(while true; do echo 34; sleep 2; done) | multiview -s StreamB & \
+multiview
 ```
 
-### Options
+
+## Multiview Interface
+There are two ways of instantiating and using `multiview`. As a **display**, or as a **stream**. When you run your shell processes, you pipe your stdouts to stream instances of multiview which forward this stdout to display instances to be presented in an accessible column view.
+
+#### Displays
+By default multiview launches as a display. A display instance displays stdout information from multiple processes in neat columns. To launch a display, it's as simple as:
+
+```bash
+multiview
+```
+
+#### Streams
+Streams take stdout information from a process using a standard UNIX pipe `|` and forward it to a display instance. Use a display instance by piping output from any process that has an stdout as follows:
+
+```bash
+myProcess | multiview -s
+```
+
+You can also optionally give your stream instance a name. If this isn't specified the name will be the PID of the stream process.
+
+```bash
+myProcess | multiview -s "My Process Name"
+```
+
+#### Channels
+Channels allow you to have different sets of stdout streams going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
+
+```bash
+# for streams:
+myProcess | multiview -s -c channelName
+
+# for displays:
+multiview -c channelName
+```
+
+By default, multiview runs on a channel called `multiview_main`
+
+#### A Note on Efficiency
+Multiview has the potential to either be really efficient in how it presents data, or really inefficient (but perhaps more user friendly). By default, multiview display columns will _emulate_ the feel of a regular shell. But, this is actually quite inefficient because when the column fills up, it needs to "scroll". To sumulate a regular terminal window, we redraw that entire column to make it feel like the column is scrolling. This can lead to many bytes of data being refreshed every update.
+
+If you're concerned about efficiency (ie. you're working remotely), multiview display has an "efficient" mode:
+
+```bash
+multiview -e
+```
+
+Efficient mode just removes the simulated scrolling feel and wraps your output to the top of the column. This prevents extraneous redrawing, but also means the user may lose context of your stream.
+
+You can balance this by setting the number of lines you'd like to keep for context (default is 7). The lower this number is, the more efficiently your output will be presented:
+
+```bash
+# leaves 3 lines of the previous "page" when it reaches the end of column
+# and starts from the top.
+multiview -e 3
+```
+
+### Full Usage Information
+
 ```bash
  Options:
     -h, --help             output usage information
     -V, --version          output the version number
-    -p, --presenter        make it a presenter instance
-    -t, --terminal [name]  make it a terminal instance with an optional name (default: processPID)
-    -c, --channel [name]   specify channel name (default: columnview)
-```
-
-## How it works
-
-There are two types of instances of multiview. One is a presenter `multiview` and the other is a terminal `multiview -t`. You pipe your concurrent processes
-
-Whatever is piped to a terminal gets pushed to a UNIX socket and that socket in turn is read and formatted by the presenter.
-
-## See it in Action
-Switch to the module directory and run `npm test`
-```
-npm install multiview
-cd node_modules/multiview
-npm test
-```
-
-
-## Advanced
-
-### Channels
-You can have multiple instances of multiview running on different channels. Just start a new channel presenter and pipe stdouts to terminals with that same channel, both using the `-c` or `--channel` option set to the same value.
-
-```bash
-multiview -c special & node processA.js | multiview -t -c special & node processB.js | multiview -t -c special
+    -d, --display          make it a display instance
+    -s, --stream [name]    make it a stream instance with an optional name (default: stream's processPID)
+    -c, --channel [name]   specify channel name (default: multiview_main)
 ```
 
 

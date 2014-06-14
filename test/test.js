@@ -1,5 +1,5 @@
 // var timer = parseInt(Math.random()*3000, 10);
-var timer = 500;
+var timer = 10;
 
 setInterval(function(){
   process.stdout.write("TESTING PIPE" + process.pid +" " +Math.random()*2987324872398476239847); 
