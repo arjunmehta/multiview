@@ -1,6 +1,5 @@
-# node-multiview (Unpublished)
-
-**Note: This module has not been published on npm yet, and is in preliminary development**
+# node-multiview
+**version 0.0.1**
 
 A terminal utility that channels multiple stdouts to present them neatly in a navigable column view.
 
@@ -77,12 +76,12 @@ multiview -e 3
 ### Full Usage Information
 
 ```bash
- Options:
-    -h, --help             output usage information
-    -V, --version          output the version number
-    -d, --display          make it a display instance
-    -s, --stream [name]    make it a stream instance with an optional name (default: stream's processPID)
-    -c, --channel [name]   specify channel name (default: multiview_main)
+Usage: multiview [options]
+Options:
+    -h, --help               output usage information
+    -V, --version            output the version number
+    -s, --stream [name]      make it a stream with an optional name. (default: the stream's PID)
+    -c, --channel [name]     specify channel name. (default: multiview_main)
 ```
 
 

@@ -5,6 +5,6 @@ node ./test/test.js |& node ./main.js -s Another -c testing &
 node ./test/test.js |& node ./main.js -s Testing123 -c testing &
 node ./test/test.js |& node ./main.js -s SomethingElse -c testing &
 node ./test/test.js |& node ./main.js -s "Something Else" -c testing &
-node ./main.js -c testing -f
+node ./main.js -c testing
 
 # "node ./main.js" "node ./test/test.js | node ./main.js -t A" "node ./test/test.js | node ./main.js -t A" "node ./test/test.js | node ./main.js -t A" "node ./test/test.js | node ./main.js -t A" 
