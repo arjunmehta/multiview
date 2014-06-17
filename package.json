@@ -1,6 +1,6 @@
 {
   "name": "multiview",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A terminal utility that channels multiple stdouts and presents them neatly in a navigable column view.",
   "main": "main.js",
   "scripts": {

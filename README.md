@@ -1,5 +1,4 @@
 # node-multiview
-**version 0.0.1**
 
 A terminal utility that channels multiple stdouts to present them neatly in a navigable column view.
 
@@ -10,7 +9,7 @@ A terminal utility that channels multiple stdouts to present them neatly in a na
 npm install -g multiview
 ```
 
-#### Usage Example
+### Usage Example
 ```bash
 (while true; do echo 12; sleep 1; done) | multiview -s StreamA & \
 (while true; do echo 34; sleep 2; done) | multiview -s StreamB & \
@@ -21,14 +20,14 @@ multiview
 ## Multiview Interface
 There are two ways of instantiating and using `multiview`. As a **display**, or as a **stream**. When you run your shell processes, you pipe your stdouts to stream instances of multiview which forward this stdout to display instances to be presented in an accessible column view.
 
-#### Displays
+### Displays
 By default multiview launches as a display. A display instance displays stdout information from multiple processes in neat columns. To launch a display, it's as simple as:
 
 ```bash
 multiview
 ```
 
-#### Streams
+### Streams
 Streams take stdout information from a process using a standard UNIX pipe `|` and forward it to a display instance. Use a display instance by piping output from any process that has an stdout as follows:
 
 ```bash
@@ -41,7 +40,7 @@ You can also optionally give your stream instance a name. If this isn't specifie
 myProcess | multiview -s "My Process Name"
 ```
 
-#### Channels
+### Channels
 Channels allow you to have different sets of stdout streams going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
 
 ```bash
@@ -54,24 +53,17 @@ multiview -c channelName
 
 By default, multiview runs on a channel called `multiview_main`
 
-#### A Note on Efficiency
-Multiview has the potential to either be really efficient in how it presents data, or really inefficient (but perhaps more user friendly). By default, multiview display columns will _emulate_ the feel of a regular shell. But, this is actually quite inefficient because when the column fills up, it needs to "scroll". To sumulate a regular terminal window, we redraw that entire column to make it feel like the column is scrolling. This can lead to many bytes of data being refreshed every update.
+### (Not yet implemented) A Note on Efficiency
 
-If you're concerned about efficiency (ie. you're working remotely), multiview display has an "efficient" mode:
+**Work in Progress**
 
-```bash
-multiview -e
-```
-
-Efficient mode just removes the simulated scrolling feel and wraps your output to the top of the column. This prevents extraneous redrawing, but also means the user may lose context of your stream.
-
-You can balance this by setting the number of lines you'd like to keep for context (default is 7). The lower this number is, the more efficiently your output will be presented:
+Multiview has the potential to either be really efficient in how it presents data, or really inefficient (but perhaps more user friendly). By default, multiview display columns will be pretty efficient, but if you want to emulate the scrolling effect of a regular terminal you can enable **flow mode**.
 
 ```bash
-# leaves 3 lines of the previous "page" when it reaches the end of column
-# and starts from the top.
-multiview -e 3
+multiview -f
 ```
+
+ This emulates the scrolling feed feel of a normal terminal, but is quite inefficient as it needs to redraw the output for every new input. Users working remotely should take note.
 
 ### Full Usage Information
 
