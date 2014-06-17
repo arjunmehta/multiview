@@ -17,6 +17,9 @@
     "bash",
     "tty",
     "multiple",
+    "multiview",
+    "tmux",
+    "multiplex",
     "columns",
     "stream",
     "pipe",
@@ -29,9 +32,9 @@
   },
   "homepage": "https://github.com/arjunmehta/node-multiview",
   "dependencies": {
-    "commander": "^2.2.0",
-    "keypress": "^0.2.1",
-    "strip-ansi": "^0.2.2",
-    "byline": "^4.1.1"
+    "commander": "~2.2.0",
+    "keypress": "~0.2.1",
+    "strip-ansi": "~0.2.2",
+    "byline": "~4.1.1"
   }
 }
