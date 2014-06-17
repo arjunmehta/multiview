@@ -29,6 +29,7 @@
     "commander": "^2.2.0",
     "keypress": "^0.2.1",
     "wcwidth.js": "0.0.4",
-    "strip-ansi": "^0.2.2"
+    "strip-ansi": "^0.2.2",
+    "JSONStream": "^0.8.3"
   }
 }
