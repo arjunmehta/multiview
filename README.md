@@ -28,10 +28,11 @@ multiview
 ```
 
 ### Streams
-Streams take stdout information from a process using a standard UNIX pipe `|` and forward it to a display instance. Use a display instance by piping output from any process that has an stdout as follows:
+Streams take stdout information from a process using a standard UNIX pipe `|` and forward it to a display instance. You can of course also combine pipe stderr with `|&` instead if you'd like to forward that along as well. Use a display instance by piping output from any process that has an stdout as follows:
 
 ```bash
 myProcess | multiview -s
+myProcess |& multiview -s
 ```
 
 You can also optionally give your stream instance a name. If this isn't specified the name will be the PID of the stream process.
@@ -39,6 +40,7 @@ You can also optionally give your stream instance a name. If this isn't specifie
 ```bash
 myProcess | multiview -s "My Process Name"
 ```
+
 
 ### Channels
 Channels allow you to have different sets of stdout streams going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
