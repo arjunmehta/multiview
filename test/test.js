@@ -9,7 +9,7 @@ else {
 }
 
 setInterval(function(){
-  process.stdout.write("TESTING PIPE" + process.pid +" " +Math.random()*2987324872398476239847); 
+  process.stdout.write("TESTING PIPE" + process.pid +" " +Math.random()*2987324872398476239847 + "\n"); 
 },timer);
 
 process.stdout.on('error', function(err) {

@@ -1,10 +1,10 @@
 #!/bin/bash
-node ./test/test.js | node ./main.js -s A &
-node ./test/test.js | node ./main.js -s B &
-node ./test/test.js | node ./main.js -s Another &
-node ./test/test.js | node ./main.js -s Testing123 &
-node ./test/test.js | node ./main.js -s SomethingElse &
-node ./test/test.js | node ./main.js -s "Something Else" &
-node ./main.js
+node ./test/test.js |& node ./main.js -s A -c testing &
+node ./test/test.js |& node ./main.js -s B -c testing &
+node ./test/test.js |& node ./main.js -s Another -c testing &
+node ./test/test.js |& node ./main.js -s Testing123 -c testing &
+node ./test/test.js |& node ./main.js -s SomethingElse -c testing &
+node ./test/test.js |& node ./main.js -s "Something Else" -c testing &
+node ./main.js -c testing -f
 
 # "node ./main.js" "node ./test/test.js | node ./main.js -t A" "node ./test/test.js | node ./main.js -t A" "node ./test/test.js | node ./main.js -t A" "node ./test/test.js | node ./main.js -t A" 
