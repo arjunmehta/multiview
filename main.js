@@ -20,10 +20,6 @@ program
 
 
 if(program.stream !== undefined){
-  // input = byline(process.stdin);
-  // input.on('data', function(data){
-  //   console.log(data);
-  // });
   require('./lib/terminal.js')(program);
 }
 else{
