@@ -5,9 +5,10 @@
 // MIT License
 //
 
+var byline = require('byline');
 var program = require('commander');
-var app;
 
+var input;
 
 program
   .version('0.1.0')
@@ -19,6 +20,10 @@ program
 
 
 if(program.stream !== undefined){
+  // input = byline(process.stdin);
+  // input.on('data', function(data){
+  //   console.log(data);
+  // });
   require('./lib/terminal.js')(program);
 }
 else{
