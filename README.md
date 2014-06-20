@@ -74,6 +74,7 @@ Options:
     -V, --version            output the version number
     -s, --stream [name]      make it a stream with an optional name. (default: the stream's PID)
     -c, --channel [name]     specify channel name. (default: multiview_main)
+    -f, --flow               if this is a display, scroll new content in each column like a normal terminal. WARNING: This can be bandwidth intensive on remote connections
 ```
 
 
