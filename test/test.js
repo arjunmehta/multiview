@@ -11,6 +11,9 @@ else {
 }
 
 setInterval(function(){
+  if(count > 100){
+    process.exit(1);
+  }
   process.stdout.write("TESTING PIPE" + process.pid +" " + (count++) + " " + Math.random()*298732487847 + "\n"); 
 },timer);
 

@@ -11,8 +11,8 @@ npm install -g multiview
 
 ### Usage Example
 ```bash
-(while true; do echo 12; sleep 1; done) | multiview -s StreamA & \
-(while true; do echo 34; sleep 2; done) | multiview -s StreamB & \
+(for ((n=0;n<15;n++)); do echo 12; sleep .5; done) | multiview -s ViewA & \
+(for ((n=0;n<15;n++)); do echo 12; sleep .2; done) | multiview -s ViewB & \
 multiview
 ```
 
