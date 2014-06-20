@@ -11,7 +11,7 @@ var program = require('commander');
 var input;
 
 program
-  .version('1.0.0')
+  .version('1.0.1')
   .option('-s, --stream [name]', "make it a stream with an optional name. (default: the stream's PID)")
   .option('-c, --channel [name]', 'specify channel name. (default: multiview_main)', 'multiview_main')  
   .option('-f, --flow', 'if this is a display, scroll new content in each column like a normal terminal. WARNING: This can be bandwidth intensive on remote connections')  
