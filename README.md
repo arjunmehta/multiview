@@ -16,6 +16,11 @@ npm install -g multiview
 multiview
 ```
 
+This will look like the following:
+![multiview screenshot](/screen.png "node-multiview screenshot")
+
+Exit the display by pressing `q` or `ctrl+c`.
+
 
 ## Multiview Interface
 There are two ways of instantiating and using `multiview`. As a **display**, or as a **stream**. When you run your shell processes, you pipe your stdouts to stream instances of multiview which forward this stdout to display instances to be presented in an accessible column view.
