@@ -1,7 +1,9 @@
 var timer = parseInt(Math.random()*1000, 10);
 // var timer = 50;
 
-if (process.stdout.isTTY){
+var count = 0;
+
+if(process.stdout.isTTY){
   console.log('not redirected');
 }
 else {
@@ -9,7 +11,7 @@ else {
 }
 
 setInterval(function(){
-  process.stdout.write("TESTING PIPE" + process.pid +" " +Math.random()*2987324872398476239847 + "\n"); 
+  process.stdout.write("TESTING PIPE" + process.pid +" " + (count++) + " " + Math.random()*298732487847 + "\n"); 
 },timer);
 
 process.stdout.on('error', function(err) {

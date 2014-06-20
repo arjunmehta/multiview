@@ -4,7 +4,8 @@
   "description": "A terminal utility that channels multiple stdouts and presents them neatly in a navigable column view.",
   "main": "main.js",
   "scripts": {
-    "test": "chmod +x ./test/test.sh && ./test/test.sh"
+    "test": "chmod +x ./test/test.sh && ./test/test.sh",
+    "test_flow": "chmod +x ./test/testflow.sh && ./test/testflow.sh"
   },
   "bin": {
     "multiview": "main.js"
