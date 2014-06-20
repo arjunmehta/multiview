@@ -11,8 +11,8 @@ npm install -g multiview
 
 ### Usage Example
 ```bash
-(for ((n=0;n<15;n++)); do echo 12; sleep .5; done) | multiview -s ViewA & \
-(for ((n=0;n<15;n++)); do echo 12; sleep .2; done) | multiview -s ViewB & \
+(for n in {1..20}; do echo $n; sleep .5; done) | multiview -s ViewA & \
+(for n in {1..20}; do echo $n; sleep .2; done) | multiview -s ViewB & \
 multiview
 ```
 
@@ -40,6 +40,8 @@ You can also optionally give your stream instance a name. If this isn't specifie
 ```bash
 myProcess | multiview -s "My Process Name"
 ```
+
+Active streams show up with a green header in the display, while inactive/completed streams have grey headers.
 
 
 ### Channels
