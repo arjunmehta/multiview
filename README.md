@@ -55,9 +55,7 @@ multiview -c channelName
 
 By default, multiview runs on a channel called `multiview_main`
 
-### (Not yet implemented) A Note on Efficiency
-
-**Work in Progress**
+### Flow Mode
 
 Multiview has the potential to either be really efficient in how it presents data, or really inefficient (but perhaps more user friendly). By default, multiview display columns will be pretty efficient, but if you want to emulate the scrolling effect of a regular terminal you can enable **flow mode**.
 
