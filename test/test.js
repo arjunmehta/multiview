@@ -7,8 +7,11 @@ if(process.stdout.isTTY){
   console.log('not redirected');
 }
 else {
-  console.log('redirected');
+  console.log('\033[31mredirected ' + new Date().getMilliseconds() + "\033[0m");
+  console.log('\033[32mTest ' + new Date().getMilliseconds() + "\033[0m");
 }
+
+// process.exit(0);
 
 setInterval(function(){
   if(count > 100){
@@ -18,6 +21,5 @@ setInterval(function(){
 },timer);
 
 process.stdout.on('error', function(err) {
-    console.error(err);
     process.exit(0);
 });

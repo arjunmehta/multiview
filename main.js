@@ -1,27 +1,41 @@
-#!/usr/bin/env node
+var Receiver = require('./lib/Receiver');
+var Spawn = require('./lib/Spawn');
+var Stream = require('./lib/Stream');
 
-// multiview - shell stdout column view utility written for node.js
-// Copyright (c) 2014 Arjun Mehta
-// MIT License
-//
+function MultiView(opts) {
 
-var byline = require('byline');
-var program = require('commander');
-
-var input;
-
-program
-  .version('1.1.1')
-  .option('-s, --stream [name]', "make it a stream with an optional name. (default: the stream's PID)")
-  .option('-c, --channel [name]', 'specify channel name. (default: multiview_main)', 'multiview_main')  
-  .option('-f, --flow', 'if this is a display, scroll new content in each column like a normal terminal. WARNING: This can be bandwidth intensive on remote connections')  
-  .parse(process.argv);
-
-
-if(program.stream !== undefined){
-  require('./lib/terminal.js')(program);
-}
-else{
-  require('./lib/presenter.js')(program);
+    this.receiver = null;
+    this.streams = {};
 }
 
+MultiView.prototype.spawn = function(command, args, opts) {
+
+    checkReceiver(this);
+
+    if (!Array.isArray(args) && typeof args === 'object') {
+        opts = args;
+        args = [];
+    } else {
+        opts = opts || {};
+    }     
+
+    return new Spawn(this, command, args, opts);
+};
+
+MultiView.prototype.stream = function(name, opts) {
+
+    checkReceiver(this);
+    opts = opts || {};
+
+    this.streams[name] = new Stream(this, name);
+    return this.streams[name];
+};
+
+
+function checkReceiver(mv) {
+    if (mv.receiver === null) {
+        mv.receiver = new Receiver(null, opts);
+    }
+}
+
+module.exports = exports = new MultiView();

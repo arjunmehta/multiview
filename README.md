@@ -1,25 +1,129 @@
-# node-multiview
+# multiview
 
-A terminal utility that channels multiple stdouts to present them neatly in a navigable column view.
+A utility to execute multiple processes and channel their outputs into separate little column views. This package provides:
 
-## Getting Started
+- **a CLI tool to spawn multiple processes and concurrently view their output.**
+- **a node/io.js module to do the same.**
+- **handles ANSI output from processes.**
+- **presents all spawned process outputs neatly into columns.**
+- **choice of display efficiency modes.**
+- **error handling and exit code transmission.**
+- **stream support.**
+
+There are two ways of using multiview: as a **CLI tool**, or as a **node/io.js module**:
+
+## The CLI Tool: Basic Usage
 
 ### Installation
 ```bash
 npm install -g multiview
 ```
 
-### Usage Example
+### CLI Usage Example
+The CLI tool can spawn multiple processes and will separate their outputs into columns. Just execute the cli command `multiview` and place each sub-command into their own square brackets `[]`.
+
 ```bash
-(for n in {1..20}; do echo $n; sleep .5; done) | multiview -s StreamA & \
-(for n in {1..20}; do echo $n; sleep .2; done) | multiview -s StreamB & \
-multiview
+multiview [ls -l] [node --help] [find ../ node_modules]
 ```
 
-This will look like the following:
-![multiview screenshot](/screen.png "node-multiview screenshot")
+### CLI Usage Example (UNIX Piping)
+The CLI tool also supports piping using standard UNIX piping conventions. Just pipe to a new instance of `multiview -s`/`multiview --stream` to capture its output. Then execute a final multiview instance to display. Like so:
 
-Exit the display by pressing `q` or `ctrl+c`.
+```bash
+(ls -l | multiview -s) & (node --help | multiview -s) & (find ../ node_modules | multiview -s) & multiview
+```
+
+**Note:** *This method can't capture process name, exit codes, and can't differentiate between stdout/stderr.*
+
+## The Module: Basic Usage
+
+Multiview can also be used as a module in your node/io.js projects. The module can spawn new processes and will display them in a neat column view.
+
+### Installation
+```bash
+npm install --save multiview
+```
+
+### Include
+```javascript
+var multiview = require('multiview')
+```
+
+### Spawn Processes
+Each call to `multiview.spawn()` creates a new process which behaves like a regular spawn instance. View advanced usage to see how you can take advantage of this.
+
+```javascript
+multiview.spawn('ls', ['-l'])
+multiview.spawn('node', ['--help']);
+multiview.spawn('find', ['../', 'node_modules'])
+```
+
+```javascript
+multiview.out(channel).pipe()
+```
+
+## The CLI Tool: Advanced Usage
+
+```bash
+Usage: multiview [command(s)] [options]
+Options:
+    -h, --help               output usage information
+    -V, --version            output the version number
+    -s, --stream [name]      instantiate as a stream provider with an optional name. (default: the stream's PID)
+    -c, --channel [name]     specify a channel name to stream to/from. (default: multiview_main)
+    -e, --efficient          use this option for rendering process output efficiently. Useful when connected remotely and reduces terminal cpu usage.
+    -E, --autoexit           exit automatically, passing the first exit code received, if there is one.
+```
+
+
+## The Module: Advanced Usage
+
+### Global Options
+```bash
+var multiview = require('multiview')({    
+    efficient: true
+})
+```
+
+### Global Events
+```javascript
+multiview.on('spawn_exit', function(process, code, signal){})
+multiview.on('spawn_close', function(process, code, signal){})
+multiview.on('spawn_error', function(process, err){})
+multiview.on('spawn_disconnect', function(process){})
+multiview.on('spawn_message', function(process, message, sendHandle){})
+```
+
+### Process Options
+```javascript
+var s = multiview.spawn('ls', ['-l'], { 
+    wrap: true, 
+    header: 'Process A'
+})
+```
+
+### Process Events
+
+```javascript
+s.on('exit', function(code, signal){})
+s.on('close', function(code, signal){})
+s.on('error', function(err){})
+s.on('disconnect', function(){})
+s.on('message', function(message, sendHandle){})
+```
+
+
+### Piping
+Because spawned processes are native node spawned processes, you can pipe their output, or even write to them by writing to their stdin.
+
+```javascript
+s.stdout.pipe(fs.writeStream);
+s.stderr.pipe(fs.writeStream);
+process.stdin.pipe(s.stdin);
+```
+
+**Note:** *You probably want to avoid piping the spawn'ed process's stdout to your main stdout, since it will interfere with the rendering of column output.*
+
 
 
 ## Multiview Interface
@@ -31,6 +135,25 @@ By default multiview launches as a display. A display instance displays stdout i
 ```bash
 multiview
 ```
+
+### Exit the CLI Tool
+
+#### Automatically
+If you want to exit the CLI tool automatically after all processes have finished, you can just use the `--autoexit`/`-e` flag.
+
+```bash
+multiview [ls -l] [node --help] [find ../ node_modules] --autoexit
+```
+
+If all of the processes end with no error, multiview will exit with no errors. If any of the spawned processes end with an error, multiview will exit with the error code of the first process to exit with an error, and will print out all the other error codes of any other processes as well. If you'd prefer not to show error codes use the `--silent`/`-s` option.
+
+```bash
+multiview [ls -l] [node --help] [find ../ node_modules] --autoexit
+```
+
+
+#### Manually
+Exit the display by pressing `q` or `ctrl+c`.
 
 ### Streams
 Streams take stdout information from a process using a standard UNIX pipe `|` and forward it to a display instance. You can of course also combine pipe stderr with `|&` instead if you'd like to forward that along as well. Use a display instance by piping output from any process that has an stdout as follows:
@@ -47,7 +170,6 @@ myProcess | multiview -s "My Process Name"
 ```
 
 Active streams show up with a green header in the display, while inactive/completed streams have grey headers.
-
 
 ### Channels
 Channels allow you to have different sets of stdout streams going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
@@ -86,24 +208,7 @@ Options:
 
 
 ## License
+```
 The MIT License (MIT)
-
-Copyright (c) 2014 Arjun Mehta
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Copyright (c) 2015 Arjun Mehta
+```
