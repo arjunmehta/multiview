@@ -32,13 +32,13 @@
     "url": "https://github.com/arjunmehta/node-multiview/issues"
   },
   "homepage": "https://github.com/arjunmehta/node-multiview",
-  "dependencies": {    
+  "dependencies": {
     "columns": "~0.7.2",
     "keypress": "~0.2.1",
     "protogram": "~1.1.3",
     "protogram-help": "~1.0.2",
-    "split": "~0.3.3",
-    "unparse-args": "^1.0.1"
+    "stream-headerfooter": "~1.1.1",
+    "unparse-args": "~1.0.1"
   },
   "devDependencies": {
     "nodeunit": "^0.9.0"

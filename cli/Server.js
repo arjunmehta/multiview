@@ -1,31 +1,28 @@
 var util = require('util');
 var net = require('net');
 var fs = require('fs');
-var split = require('split');
-
-var Router = require('./Router');
+var headerfooter = require('stream-headerfooter');
 var EventEmitter = require("events").EventEmitter;
 
 util.inherits(Server, EventEmitter);
 
+
 // Main Constructor
 
-function Server(channel) {
+function Server(main, channel) {
 
-    var _this = this;
-    
     EventEmitter.call(this);
-    channel = channel || 'multiview_main';
 
-    var socketPath = __dirname + '/' + channel + '.sock';
-    var router = new Router(this, channel);
-    var server = net.createServer();
+    var socketPath = __dirname + '/' + channel + '.sock',
+        server = net.createServer();
 
-    server.on('error', function(e) {        
+    server.on('error', function(e) {
 
         if (e.code == 'EADDRINUSE') {
 
-            var clientSocket = new net.Socket({readableObjectMode: true});
+            var clientSocket = new net.Socket({
+                readableObjectMode: true
+            });
 
             clientSocket.on('error', function(e) {
                 if (e.code == 'ECONNREFUSED') {
@@ -38,23 +35,27 @@ function Server(channel) {
 
             clientSocket.connect({
                 path: socketPath
-            }, function() {
-                _this.emit('error', e);
-            });
+            }, function() {});
         }
     });
 
     server.on('connection', function(socket) {
-        // socket.setEncoding('utf8');
-        socket.pipe(split()).pipe(router, {end: false});
-    });
 
-    server.on('close', function() {
-        _this.emit('close');
-    });
+        var stream,
+            pipet = new headerfooter.In();
 
-    server.on('listening', function() {
-        _this.emit('listening');
+        socket.pipe(pipet);
+
+        pipet.on('header', function(header) {
+            stream = main.stream(header.id);
+            pipet.pipe(stream);
+        });
+
+        pipet.on('footer', function(footer) {
+            if (footer.exitCode !== undefined) {
+                stream.exit(footer.exitCode);
+            }
+        });
     });
 
     server.listen(socketPath);

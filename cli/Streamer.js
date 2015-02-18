@@ -1,87 +1,79 @@
 var net = require('net');
-var split = require('split');
-
 var util = require('util');
 var stream = require('stream');
-var PassThrough = stream.PassThrough || require('readable-stream').PassThrough;
 
+var headerfooter = require('stream-headerfooter');
+
+var PassThrough = stream.PassThrough || require('readable-stream').PassThrough;
 util.inherits(Streamer, PassThrough);
 
 
-function Streamer(opts) {
-
-    opts = opts || {};
-
-    var _this = this;
+function Streamer(name, channel) {
 
     PassThrough.call(this);
 
-    var connected = false,
-        retryCount = 0,
+    var _this = this;
+
+    var retryCount = 0,
         timeOut = 5000,
         reconnectInterval = 100,
         lineQueue = [],
-        stream = new net.Socket({writableObjectMode: true});
-
-    var name = typeof opts.stream === 'string' ? opts.stream : "PID:" + process.pid;
-    name = opts.name;
-    var channel = opts.channel || 'multiview_main';
-    var channelTag = "::" + channel + "::";
-    var socketPath = __dirname + "/" + channel + '.sock';
-
-    this.stream = stream;
-    this.lineQueue = lineQueue;
-    this.channelTag = channelTag;
-    this.name = name;
+        socket = new net.Socket(),
+        socketPath = __dirname + '/' + channel + '.sock';
 
     this.connected = false;
-    this.first = true;
-    this.exiting = false;
+    this.socket = socket;
 
-    this.on('data', function(data) {
-        this.writeToStream(name + channelTag + data);
+    this.controller = new headerfooter.Out({
+        header: {
+            id: name
+        }
     });
 
-    stream.on("connect", function() {
+    this.controller.pipe(socket, {
+        end: false
+    });
 
-        _this.emit('connect');
+    this.controller.on('error', function(err) {
+        // console.log('Controller error', err);
+    });
 
-        // console.log("stream", stream);
+    this.lineQueue = lineQueue;
 
-        if (_this.first === true) {
-            stream.write(name + channelTag + '\n');
-        }
+    this.on('data', function(data) {
+        _this.writeToStream(data);
+    });
 
+    socket.on('connect', function() {
         retryCount = 0;
         _this.connected = true;
 
         for (var i = 0; i < lineQueue.length; i++) {
-            stream.write(lineQueue[i]);
+            _this.controller.write(lineQueue[i]);
         }
         lineQueue = [];
 
         if (_this.exiting !== false) {
-            _this.exit(_this.exiting);
-            _this.emit('exiting', _this.exiting);
+            _this.controller.end();
+            socket.end();
+            socket.destroy();
+            socket.unref();
+            _this.emit('end', _this.exiting);
         }
     });
 
-    stream.on("close", function(error) {
+    socket.on('close', function(error) {
+        if (error) {}
         _this.connected = false;
-        // stream.destroy();
-        _this.emit('close', error);
+        tryConnect();
     });
 
-    stream.on("end", function() {
-        _this.connected = false;
-        _this.emit('end');
-        // console.log("CLOSED", stream);
-        // console.log("ENDING: ", name);
+    socket.on('end', function() {
+        // console.log('Socket Ended');
     });
 
-    stream.on("error", function(error) {
-        // tryConnect();
-        _this.emit('error', error);
+    socket.on('error', function(err) {
+        // console.log('Socket Error', err);
     });
 
     tryConnect();
@@ -91,36 +83,38 @@ function Streamer(opts) {
         setTimeout(function() {
 
             if (retryCount < timeOut) {
-                stream.connect(socketPath);
+                socket.connect(socketPath);
                 retryCount += reconnectInterval;
             } else {
-                _this.emit('error', new Error("Timeout"));
+                // _this.emit('error', new Error('Timeout'));
             }
 
         }, reconnectInterval);
     }
-
-    // process.on('exit', function(code) {
-    //     stream.destroy();
-    //     stream.unref();
-    //     stream.end();
-    // });
 }
 
 Streamer.prototype.exit = function(code) {
+
+    this.controller.footer = {
+        exitCode: code
+    };
+
     this.exiting = code;
+
     if (this.connected === true) {
-        this.stream.end("streamExit" + this.channelTag + this.name + this.channelTag + this.exiting + "\n");
+        this.emit('exit', code);
+        this.controller.end();
     }
 };
 
 Streamer.prototype.writeToStream = function(data) {
-    if (this.connected === true) {
+
+    if (this.socket.writable === true) {
         if (data !== '') {
-            this.stream.write({name: this.name, data: data + '\n'});
+            this.controller.write(data);
         }
     } else {
-        this.lineQueue.push({name: this.name, data: data + '\n'});
+        this.lineQueue.push(data);
     }
 };
 
