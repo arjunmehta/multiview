@@ -34,7 +34,7 @@ program
         default: 'multiview_main'
     })
     .option('--efficient', {
-        description: 'If this is a display, scroll new content in each column like a normal terminal. WARNING: This can be bandwidth intensive on remote connections'
+        description: 'Render process output efficiently – great for remote connections'
     });
 
 program.parse(process.argv);
