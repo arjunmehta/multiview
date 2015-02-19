@@ -1,6 +1,6 @@
 var unparse = require('unparse-args');
 
-var Multiview = require('../main');
+var MultiView = require('../main');
 var Server = require('./Server');
 var Streamer = require('./Streamer');
 
@@ -13,7 +13,7 @@ module.exports = exports = function(args, flags) {
         unparsed_args,
         channel = flags.channel || 'multiview_main';
 
-    var mv = new Multiview(flags);
+    var mv = new MultiView(flags);
 
 
     if (flags.help) {
