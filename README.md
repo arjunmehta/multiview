@@ -45,23 +45,25 @@ Basic usage should be enough for most. But there are a few options available for
 ### AutoExit
 #### Option: --autoexit, -x [delay]
 
-When this option is set, multiview will automatcially exit with an error code. The error code is determined by the first non-zero exit code received from a spawned process. If all processes exit with no errors (`0`), multiview will also exit with `0`. This is great for testing.
+By default, multiview will stay open until the user presses `q` or `ctrl+c`.
+
+When this option is set, multiview will automatcially exit with an error code. The error code is determined by the first non-zero exit code received from a spawned process. If all processes exit with no errors (`0`), multiview will also exit with `0`. This is great for use with continuous integration systems and testing.
 
 Optionally provide a number (in milliseconds) for how long to wait to exit after the last process has finished.
 
 ### Efficient Mode
 #### Option: --efficient, -e
 
-By default, when the output column of a process gets filled to the bottom, all previous output is pushed up, just like you'd expect from a standard terminal. This is however, quite inefficient to render, though that inefficiency is generally not felt by most users.
+By default, when the output column of a process gets filled to the bottom, all previous output is pushed up, just like you'd expect from a standard terminal. This is, however, quite inefficient to render, though that inefficiency is generally not felt by most users.
 
-However, if you are connected remotely and bandwidth is an issue, or if you are spawning processes with a lot of output that can be taxing to print to the terminal – there are multiple processes writing non-linearly to the screen after all – it is recommended you set multiview to efficient. This option resets the cursor at the top of the column when output reaches the bottom of the output column.
+However, if you are connected remotely and bandwidth is an issue, or if you are spawning processes with a lot of output that can be taxing to print to the terminal – there are multiple processes writing non-linearly to the screen after all – it is recommended you set multiview to `efficient` mode. This option resets the cursor at the top of the column when output reaches the bottom of the output column.
 
 ### Stream Instances
 #### Option: --stream, -s <stream name>
 
-Instead of displaying the output of spawned streams, stream instances of multiview stream the output of spawned processes to another multiview instance where they can be aggregated.
+Instead of displaying the output of spawned processes, stream instances of multiview stream the output of spawned processes to a receiving multiview instance where they can be aggregated.
 
-Essentially, you can create multiple stream instances of multiview, spawning multiple processes each, and have their output display on a single receiving multiview instance!!
+Essentially, you can create multiple stream instances of multiview, spawning multiple processes each, and have their output display on a single receiving multiview instance!! This is great for scalability.
 
 ### Channels
 #### Option: --channel, -c [channel name]
@@ -70,18 +72,17 @@ Channels allow you to have different sets of processes going to different displa
 
 ```bash
 # for streams:
-myProcess | multiview -s -c channelName
+multiview [ls -l] [node --help] [find ../ node_modules] -s -c channelA
 
 # for displays:
-multiview -c channelName
+multiview -c channelA
 ```
 
 By default, multiview runs on a channel called `multiview_main`
 
+### Full Usage Information
 
 ```bash
-multiview v2.0.0
-
 Usage: cli [command(s)] [options]
 
 OPTIONS
@@ -150,7 +151,7 @@ mv.on('exit', function(stream, code){
 ### Efficient Display
 When you first include the `multiview` package in your project, you can pass in global options to the instance.
 
-Refer to the [CLI's efficient mode](#efficient-mode) for a description of what this does.
+`efficient` mode is currently the only option `:D`. Refer to the [CLI's efficient mode](#efficient-mode) for a description of what this does.
 
 ```javascript
 var mv = require('multiview')({
