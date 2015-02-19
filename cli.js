@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Copyright (c) 2015 Arjun Mehta
 // MIT License
 
@@ -23,12 +25,12 @@ program
         description: "Stream the output of this instance to a display instance. (default name: the stream's PID)"
     })
     .option('--channel', {
-        required: 'channel name', 
+        required: 'channel name',
         description: 'Specify a channel name. (default: multiview_main)',
         default: 'multiview_main'
     })
     .option('--autoexit', {
-        optional: 'delay', 
+        optional: 'delay',
         shortcut: '-x',
         description: 'Exit automatically after all processes have finished. (default delay: 500ms)',
         default: 'multiview_main'
