@@ -20,15 +20,6 @@ program
     .option('--help', help);
 
 program
-    .option('--stream', {
-        optional: 'stream name',
-        description: "Stream the output of this instance to a display instance. (default name: the stream's PID)"
-    })
-    .option('--channel', {
-        required: 'channel name',
-        description: 'Specify a channel name. (default: multiview_main)',
-        default: 'multiview_main'
-    })
     .option('--autoexit', {
         optional: 'delay',
         shortcut: '-x',
@@ -37,6 +28,16 @@ program
     })
     .option('--efficient', {
         description: 'Render process output efficiently – great for remote connections'
+    })
+    .option('--stream', {
+        optional: 'stream name',
+        description: "Stream the output of this instance to a display instance. (default name: the stream's PID)"
+    })
+    .option('--channel', {
+        required: 'channel name',
+        description: 'Specify a channel name. (default: multiview_main)',
+        default: 'multiview_main'
     });
+    
 
 program.parse(process.argv);
