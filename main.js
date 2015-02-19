@@ -9,6 +9,10 @@ util.inherits(MultiView, EventEmitter);
 
 
 function MultiView(opts) {
+	
+    if (!(this instanceof MultiView)) {
+        return new MultiView(options);
+    }
 
     EventEmitter.call(this);
 
@@ -42,7 +46,7 @@ MultiView.prototype.stream = function(name, opts) {
 
     var _this = this;
     var stream = new Stream(this, name);
-    
+
     this.streams.push(stream);
 
     stream.on('exit', function(code) {
