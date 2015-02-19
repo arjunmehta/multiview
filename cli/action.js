@@ -15,8 +15,7 @@ module.exports = exports = function(args, flags) {
 
     var mv = new MultiView(flags);
 
-
-    if (flags.help) {
+    if (flags.help || flags.version) {
         // don't do anything if help selected
     } else if (flags.stream) {
 
