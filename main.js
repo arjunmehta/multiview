@@ -59,4 +59,4 @@ function checkReceiver(mv) {
     }
 }
 
-module.exports = exports = new MultiView();
+module.exports = exports = MultiView;
