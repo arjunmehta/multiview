@@ -1,10 +1,9 @@
 var unparse = require('unparse-args');
+var keypress = require('keypress');
 
 var MultiView = require('../main');
 var Server = require('./Server');
 var Streamer = require('./Streamer');
-
-var keypress = require('keypress');
 
 
 module.exports = exports = function(args, flags) {

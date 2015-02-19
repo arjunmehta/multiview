@@ -1,9 +1,10 @@
 var util = require('util');
 var net = require('net');
 var fs = require('fs');
-var headerfooter = require('stream-headerfooter');
-var EventEmitter = require("events").EventEmitter;
 
+var headerfooter = require('stream-headerfooter');
+
+var EventEmitter = require("events").EventEmitter;
 util.inherits(Server, EventEmitter);
 
 

@@ -1,15 +1,15 @@
 var util = require('util');
-var EventEmitter = require("events").EventEmitter;
 
 var Receiver = require('./lib/Receiver');
 var Spawn = require('./lib/Spawn');
 var Stream = require('./lib/Stream');
 
+var EventEmitter = require("events").EventEmitter;
 util.inherits(MultiView, EventEmitter);
 
 
 function MultiView(opts) {
-	
+
     if (!(this instanceof MultiView)) {
         return new MultiView(options);
     }
