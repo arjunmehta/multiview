@@ -1,6 +1,12 @@
 # multiview
 
-A utility to spawn multiple processes and channel their outputs into separate little column views. This package provides:
+![columns title image](https://raw.githubusercontent.com/arjunmehta/multiview/image/image/splash.png)
+
+A utility to spawn multiple processes and channel their outputs into separate little column views. 
+
+
+
+This package provides:
 
 - **a CLI tool to spawn multiple processes and concurrently view their output.**
 - **a node/io.js module to do the same.**
