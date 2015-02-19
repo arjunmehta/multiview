@@ -11,7 +11,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git://github.com/arjunmehta/node-multiview.git"
+        "url": "git://github.com/arjunmehta/multiview.git"
     },
     "keywords": [
         "bash",
@@ -28,9 +28,9 @@
     "author": "Arjun Mehta",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/arjunmehta/node-multiview/issues"
+        "url": "https://github.com/arjunmehta/multiview/issues"
     },
-    "homepage": "https://github.com/arjunmehta/node-multiview",
+    "homepage": "https://github.com/arjunmehta/multiview",
     "dependencies": {
         "columns": "~0.7.3",
         "keypress": "~0.2.1",
