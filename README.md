@@ -1,6 +1,6 @@
 # multiview
 
-A utility to execute multiple processes and channel their outputs into separate little column views. This package provides:
+A utility to spawn multiple processes and channel their outputs into separate little column views. This package provides:
 
 - **a CLI tool to spawn multiple processes and concurrently view their output.**
 - **a node/io.js module to do the same.**
@@ -10,7 +10,7 @@ A utility to execute multiple processes and channel their outputs into separate 
 - **error handling and exit code transmission.**
 - **stream support.**
 
-There are two ways of using multiview: as a **CLI tool**, or as a **node/io.js module**:
+There are two ways of using multiview: as a **[CLI tool](#the-cli-tool-basic-usage)**, or as a **[node/io.js module](#the-module-basic-usage)**:
 
 ## The CLI Tool: Basic Usage
 
@@ -26,6 +26,9 @@ The CLI tool can spawn multiple processes and will separate their outputs into c
 multiview [ls -l] [node --help] [find ../ node_modules]
 ```
 
+#### Exit Codes
+If any of the spawned processes exit with an error code other than `0`, multiview will exit with the first non-zero exit code received once all processes have completed.
+
 ### CLI Usage Example (UNIX Piping)
 The CLI tool also supports piping using standard UNIX piping conventions. Just pipe to a new instance of `multiview -s`/`multiview --stream` to capture its output. Then execute a final multiview instance to display. Like so:
 
@@ -35,144 +38,35 @@ The CLI tool also supports piping using standard UNIX piping conventions. Just p
 
 **Note:** *This method can't capture process name, exit codes, and can't differentiate between stdout/stderr.*
 
-## The Module: Basic Usage
-
-Multiview can also be used as a module in your node/io.js projects. The module can spawn new processes and will display them in a neat column view.
-
-### Installation
-```bash
-npm install --save multiview
-```
-
-### Include
-```javascript
-var multiview = require('multiview')
-```
-
-### Spawn Processes
-Each call to `multiview.spawn()` creates a new process which behaves like a regular spawn instance. View advanced usage to see how you can take advantage of this.
-
-```javascript
-multiview.spawn('ls', ['-l'])
-multiview.spawn('node', ['--help']);
-multiview.spawn('find', ['../', 'node_modules'])
-```
-
-```javascript
-multiview.out(channel).pipe()
-```
-
 ## The CLI Tool: Advanced Usage
 
-```bash
-Usage: multiview [command(s)] [options]
-Options:
-    -h, --help               output usage information
-    -V, --version            output the version number
-    -s, --stream [name]      instantiate as a stream provider with an optional name. (default: the stream's PID)
-    -c, --channel [name]     specify a channel name to stream to/from. (default: multiview_main)
-    -e, --efficient          use this option for rendering process output efficiently. Useful when connected remotely and reduces terminal cpu usage.
-    -E, --autoexit           exit automatically, passing the first exit code received, if there is one.
-```
+Basic usage should be enough for most. But there are a few options available for more advance use cases.
 
+### AutoExit
+#### Option: --autoexit, -x [delay]
 
-## The Module: Advanced Usage
+When this option is set, multiview will automatcially exit with an error code. The error code is determined by the first non-zero exit code received from a spawned process. If all processes exit with no errors (`0`), multiview will also exit with `0`. This is great for testing.
 
-### Global Options
-```bash
-var multiview = require('multiview')({    
-    efficient: true
-})
-```
+Optionally provide a number (in milliseconds) for how long to wait to exit after the last process has finished.
 
-### Global Events
-```javascript
-multiview.on('spawn_exit', function(process, code, signal){})
-multiview.on('spawn_close', function(process, code, signal){})
-multiview.on('spawn_error', function(process, err){})
-multiview.on('spawn_disconnect', function(process){})
-multiview.on('spawn_message', function(process, message, sendHandle){})
-```
+### Efficient Mode
+#### Option: --efficient, -e
 
-### Process Options
-```javascript
-var s = multiview.spawn('ls', ['-l'], { 
-    wrap: true, 
-    header: 'Process A'
-})
-```
+By default, when the output column of a process gets filled to the bottom, all previous output is pushed up, just like you'd expect from a standard terminal. This is however, quite inefficient to render, though that inefficiency is generally not felt by most users.
 
-### Process Events
+However, if you are connected remotely and bandwidth is an issue, or if you are spawning processes with a lot of output that can be taxing to print to the terminal – there are multiple processes writing non-linearly to the screen after all – it is recommended you set multiview to efficient. This option resets the cursor at the top of the column when output reaches the bottom of the output column.
 
-```javascript
-s.on('exit', function(code, signal){})
-s.on('close', function(code, signal){})
-s.on('error', function(err){})
-s.on('disconnect', function(){})
-s.on('message', function(message, sendHandle){})
-```
+### Stream Instances
+#### Option: --stream, -s <stream name>
 
+Instead of displaying the output of spawned streams, stream instances of multiview stream the output of spawned processes to another multiview instance where they can be aggregated.
 
-### Piping
-Because spawned processes are native node spawned processes, you can pipe their output, or even write to them by writing to their stdin.
-
-```javascript
-s.stdout.pipe(fs.writeStream);
-s.stderr.pipe(fs.writeStream);
-process.stdin.pipe(s.stdin);
-```
-
-**Note:** *You probably want to avoid piping the spawn'ed process's stdout to your main stdout, since it will interfere with the rendering of column output.*
-
-
-
-## Multiview Interface
-There are two ways of instantiating and using `multiview`. As a **display**, or as a **stream**. When you run your shell processes, you pipe your stdouts to stream instances of multiview which forward this stdout to display instances to be presented in an accessible column view.
-
-### Displays
-By default multiview launches as a display. A display instance displays stdout information from multiple processes in neat columns. To launch a display, it's as simple as:
-
-```bash
-multiview
-```
-
-### Exit the CLI Tool
-
-#### Automatically
-If you want to exit the CLI tool automatically after all processes have finished, you can just use the `--autoexit`/`-e` flag.
-
-```bash
-multiview [ls -l] [node --help] [find ../ node_modules] --autoexit
-```
-
-If all of the processes end with no error, multiview will exit with no errors. If any of the spawned processes end with an error, multiview will exit with the error code of the first process to exit with an error, and will print out all the other error codes of any other processes as well. If you'd prefer not to show error codes use the `--silent`/`-s` option.
-
-```bash
-multiview [ls -l] [node --help] [find ../ node_modules] --autoexit
-```
-
-
-#### Manually
-Exit the display by pressing `q` or `ctrl+c`.
-
-### Streams
-Streams take stdout information from a process using a standard UNIX pipe `|` and forward it to a display instance. You can of course also combine pipe stderr with `|&` instead if you'd like to forward that along as well. Use a display instance by piping output from any process that has an stdout as follows:
-
-```bash
-myProcess | multiview -s
-myProcess |& multiview -s
-```
-
-You can also optionally give your stream instance a name. If this isn't specified the name will be the PID of the stream process.
-
-```bash
-myProcess | multiview -s "My Process Name"
-```
-
-Active streams show up with a green header in the display, while inactive/completed streams have grey headers.
+Essentially, you can create multiple stream instances of multiview, spawning multiple processes each, and have their output display on a single receiving multiview instance!!
 
 ### Channels
-Channels allow you to have different sets of stdout streams going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
+#### Option: --channel, -c [channel name]
+
+Channels allow you to have different sets of processes going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
 
 ```bash
 # for streams:
@@ -184,26 +78,84 @@ multiview -c channelName
 
 By default, multiview runs on a channel called `multiview_main`
 
-### Flow Mode
-
-Multiview has the potential to either be really efficient in how it presents data, or really inefficient (but perhaps more user friendly). By default, multiview display columns will be pretty efficient, but if you want to emulate the scrolling effect of a regular terminal you can enable **flow mode**.
 
 ```bash
-multiview -f
+multiview v2.0.0
+
+Usage: cli [command(s)] [options]
+
+OPTIONS
+-s, --stream [stream name]      Stream the output of this instance to a display instance. (default name: the stream's PID)
+-c, --channel <channel name>    Specify a channel name. (default: multiview_main)
+-x, --autoexit [delay]          Exit automatically after all processes have finished. (default delay: 500ms)
+-e, --efficient                 Render process output efficiently – great for remote connections
+-h, --help                      Display usage information
+-V, --version                   Display current version
 ```
 
- This emulates the scrolling feed feel of a normal terminal, but is quite inefficient as it needs to redraw the output for every new input. Users working remotely should take note.
 
-### Full Usage Information
+## The Module: Basic Usage
 
+Multiview can also be used as a module in your node/io.js projects. The module can spawn new processes (using the `child_process.spawn` syntax) and will display their output in a neat column view.
+
+### Installation
 ```bash
-Usage: multiview [options]
-Options:
-    -h, --help               output usage information
-    -V, --version            output the version number
-    -s, --stream [name]      make it a stream with an optional name. (default: the stream's PID)
-    -c, --channel [name]     specify channel name. (default: multiview_main)
-    -f, --flow               if this is a display, scroll new content in each column like a normal terminal. WARNING: This can be bandwidth intensive on remote connections
+npm install --save multiview
+```
+
+### Include
+```javascript
+var mv = require('multiview')()
+```
+
+### Spawn Processes
+Each call to `mv.spawn()` creates a new process which behaves like a regular `child_process.spawn` instance, but its output it placed into a column, and exit codes are captured.
+
+```javascript
+mv.spawn('ls', ['-l'])
+mv.spawn('node', ['--help']);
+mv.spawn('find', ['../', 'node_modules'])
+```
+
+
+## The Module: Advanced Usage
+
+### Multiview Streams
+In addition to spawning processes, you can also create special named streams on your multiview instance. You can write/pipe any text data to these streams and they will show up in their own column.
+
+```javascript
+var mvstream = mv.stream("List contents of current directory")
+var spawn = child_process.spawn('ls');
+spawn.stdout.pipe(mvstream)
+```
+
+#### Exit Streams
+Multiview streams have a special `exit()` method that takes an `code` parameter. This will exit the stream and multiview will emit an `exit` event with the exit code. This can let you pass exit codes from `child_process.spawn` instances for example, or from remote streams or events that might use similar exit codes.
+
+```javascript
+spawn.on('exit', function(code){
+    mvstream.exit(code)
+})
+```
+
+### Global Stream Exit Events
+When a process or a stream exits, an `exit` event is emitted on the main multiview instance. This carries the multiview stream instance and the exit code passed to that stream. If `mv.spawn` was used, the exit code for the spawned process will be used.
+
+```javascript
+mv.on('exit', function(stream, code){
+    console.log("process stream exited with code:", code)
+})
+```
+
+### Efficient Display
+When you first include the `multiview` package in your project, you can pass in global options to the instance.
+
+Refer to the [CLI's efficient mode](#efficient-mode) for a description of what this does.
+
+```javascript
+var mv = require('multiview')({
+    efficient: true
+})
 ```
 
 
