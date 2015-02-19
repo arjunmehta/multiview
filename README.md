@@ -57,12 +57,22 @@ When this option is set, multiview will automatcially exit with an error code. T
 
 Optionally provide a number (in milliseconds) for how long to wait to exit after the last process has finished.
 
+```bash
+multiview [ls -l] [node --help] [find ../ node_modules] -x 5000
+```
+
+
 ### Efficient Mode
 #### Option: --efficient, -e
 
 By default, when the output column of a process gets filled to the bottom, all previous output is pushed up, just like you'd expect from a standard terminal. This is, however, quite inefficient to render, though that inefficiency is generally not felt by most users.
 
 However, if you are connected remotely and bandwidth is an issue, or if you are spawning processes with a lot of output that can be taxing to print to the terminal – there are multiple processes writing non-linearly to the screen after all – it is recommended you set multiview to `efficient` mode. This option resets the cursor at the top of the column when output reaches the bottom of the output column.
+
+```bash
+multiview [ls -l] [node --help] [find ../ node_modules] -e
+```
+
 
 ### Stream Instances
 #### Option: --stream, -s <stream name>
@@ -71,16 +81,18 @@ Instead of displaying the output of spawned processes, stream instances of multi
 
 Essentially, you can create multiple stream instances of multiview, spawning multiple processes each, and have their output display on a single receiving multiview instance!! This is great for scalability.
 
+```bash
+multiview [ls -l] [node --help] [find ../ node_modules] -s &\
+multiview
+```
+
 ### Channels
 #### Option: --channel, -c [channel name]
 
 Channels allow you to have different sets of processes going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
 
 ```bash
-# for streams:
-multiview [ls -l] [node --help] [find ../ node_modules] -s -c channelA
-
-# for displays:
+multiview [ls -l] [node --help] [find ../ node_modules] -s -c channelA &/
 multiview -c channelA
 ```
 
