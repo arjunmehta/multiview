@@ -1,9 +1,8 @@
 var unparse = require('unparse-args');
-var mv = require('../main');
 
+var Multiview = require('../main');
 var Server = require('./Server');
 var Streamer = require('./Streamer');
-var Controls = require('./PresenterControls');
 
 var keypress = require('keypress');
 
@@ -14,8 +13,11 @@ module.exports = exports = function(args, flags) {
         unparsed_args,
         channel = flags.channel || 'multiview_main';
 
+    var mv = new Multiview(flags);
+
+
     if (flags.help) {
-    	// don't do anything if help selected
+        // don't do anything if help selected
     } else if (flags.stream) {
 
         var name = typeof flags.stream === 'string' ? flags.stream : 'PID:' + process.pid;
