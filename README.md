@@ -32,6 +32,8 @@ The CLI tool can spawn multiple processes and will separate their outputs into c
 multiview [ls -l] [node --help] [find ../ node_modules]
 ```
 
+![screen capture](https://raw.githubusercontent.com/arjunmehta/multiview/image/image/screenshot.gif)
+
 #### Exit Codes
 If any of the spawned processes exit with an error code other than `0`, multiview will exit with the first non-zero exit code received once all processes have completed.
 
