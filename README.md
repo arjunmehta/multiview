@@ -88,7 +88,7 @@ By default, multiview runs on a channel called `multiview_main`
 
 ### Full Usage Information
 
-```bash
+```
 Usage: cli [command(s)] [options]
 
 OPTIONS
