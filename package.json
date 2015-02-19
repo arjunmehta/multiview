@@ -1,46 +1,45 @@
 {
-  "name": "multiview",
-  "version": "2.0.0",
-  "description": "A terminal utility that channels multiple stdouts and presents them neatly in a navigable column view.",
-  "main": "main.js",
-  "scripts": {
-    "test": "chmod +x ./test/test.sh && ./test/test.sh",
-    "test_flow": "chmod +x ./test/testflow.sh && ./test/testflow.sh"
-  },
-  "bin": {
-    "multiview": "cli.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/arjunmehta/node-multiview.git"
-  },
-  "keywords": [
-    "bash",
-    "tty",
-    "multiple",
-    "multiview",
-    "tmux",
-    "multiplex",
-    "columns",
-    "stream",
-    "pipe",
-    "stdout"
-  ],
-  "author": "Arjun Mehta",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/arjunmehta/node-multiview/issues"
-  },
-  "homepage": "https://github.com/arjunmehta/node-multiview",
-  "dependencies": {
-    "columns": "~0.7.3",
-    "keypress": "~0.2.1",
-    "protogram": "~1.1.3",
-    "protogram-help": "~1.0.2",
-    "stream-headerfooter": "~1.1.1",
-    "unparse-args": "~1.0.1"
-  },
-  "devDependencies": {
-    "nodeunit": "^0.9.0"
-  }
+    "name": "multiview",
+    "version": "2.0.0",
+    "description": "Neatly view the output of multiple spawned processes.",
+    "main": "main.js",
+    "scripts": {
+        "test": "nodeunit test/test.js"
+    },
+    "bin": {
+        "multiview": "cli.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/arjunmehta/node-multiview.git"
+    },
+    "keywords": [
+        "bash",
+        "tty",
+        "multiple",
+        "multiview",
+        "tmux",
+        "multiplex",
+        "columns",
+        "stream",
+        "pipe",
+        "stdout"
+    ],
+    "author": "Arjun Mehta",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/arjunmehta/node-multiview/issues"
+    },
+    "homepage": "https://github.com/arjunmehta/node-multiview",
+    "dependencies": {
+        "columns": "~0.7.3",
+        "keypress": "~0.2.1",
+        "protogram": "~1.1.3",
+        "protogram-help": "~1.0.2",
+        "stream-headerfooter": "~1.1.1",
+        "unparse-args": "~1.0.1"
+    },
+    "devDependencies": {
+        "nodeunit": "~0.9.0"
+    }
 }
