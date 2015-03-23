@@ -19,9 +19,14 @@ module.exports = exports = function(args, flags) {
     } else if (flags.stream) {
 
         var name = typeof flags.stream === 'string' ? flags.stream : 'PID:' + process.pid,
-            stdin_streamer = new Streamer(name, channel, { logConnectMessages: false }),
+            stdin_streamer = new Streamer(name, channel, {
+                logConnectMessages: false
+            }),
             command,
-            command_args;
+            command_args,
+            streamer,
+            streamerCount = 0,
+            streamerEnded = 0;
 
         process.stdin.pipe(stdin_streamer, {
             end: false
@@ -39,11 +44,25 @@ module.exports = exports = function(args, flags) {
                 command = unparsed_args[0];
                 command_args = unparsed_args.slice(1);
 
-                new Spawn(new Streamer(unparsed_args.join(' '), channel),
+                streamer = new Streamer(unparsed_args.join(' '), channel);
+
+                streamer.on('socketBegun', function() {
+                    streamerCount++;
+                });
+
+                streamer.on('socketEnded', function() {
+                    streamerEnded++;
+                    if (streamerEnded === streamerCount) {
+                        process.exit(0);
+                    }
+                });
+
+                new Spawn(
+                    streamer,
                     command,
                     command_args,
                     command + (command_args ? ' ' + command_args.join(' ') : '')
-                );
+                );                
             }
         }
     } else {
