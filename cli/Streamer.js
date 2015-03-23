@@ -8,21 +8,27 @@ var PassThrough = stream.PassThrough || require('readable-stream').PassThrough;
 util.inherits(Streamer, PassThrough);
 
 
-function Streamer(name, channel) {
+function Streamer(name, channel, opts) {
+
+    opts = opts || {};
+
 
     PassThrough.call(this);
 
     var _this = this;
 
     var retryCount = 0,
-        timeOut = 5000,
-        reconnectInterval = 100,
+        timeOut = 10000,
+        reconnectInterval = 1000,
         lineQueue = [],
         socket = new net.Socket(),
-        socketPath = __dirname + '/' + channel + '.sock';
+        socketPath = __dirname + '/' + channel + '.sock',
+        logConnectMessages = opts.logConnectMessages !== undefined ? opts.logConnectMessages : true;
 
     this.connected = false;
+    this.exiting = false;
     this.socket = socket;
+    this.lineQueue = lineQueue;
 
     this.controller = new headerfooter.Out({
         header: {
@@ -30,50 +36,53 @@ function Streamer(name, channel) {
         }
     });
 
-    this.controller.pipe(socket, {
-        end: false
-    });
-
     this.controller.on('error', function(err) {
-        // console.log('Controller error', err);
+        if (logConnectMessages === true) {
+            console.error('Multiview Streaming Error.');
+        }
     });
-
-    this.lineQueue = lineQueue;
 
     this.on('data', function(data) {
         _this.writeToStream(data);
     });
 
     socket.on('connect', function() {
+        if (logConnectMessages === true) {
+            console.log("Multiview Stream connected to Display.");
+        }
+
+        _this.controller.pipe(socket);
+
         retryCount = 0;
         _this.connected = true;
 
         for (var i = 0; i < lineQueue.length; i++) {
+            // console.log("LINEQUEUE Process", process.pid, lineQueue[i].toString(), _this.socket.writable);
             _this.controller.write(lineQueue[i]);
         }
         lineQueue = [];
 
         if (_this.exiting !== false) {
             _this.controller.end();
-            socket.end();
-            socket.destroy();
-            socket.unref();
-            _this.emit('end', _this.exiting);
         }
     });
 
     socket.on('close', function(error) {
-        if (error) {}
         _this.connected = false;
-        tryConnect();
     });
 
     socket.on('end', function() {
-        // console.log('Socket Ended');
+        if (logConnectMessages === true) {
+            console.log("Multiview Stream Ended");
+        }
+        process.exit(0);
     });
 
     socket.on('error', function(err) {
-        // console.log('Socket Error', err);
+        if (logConnectMessages === true) {
+            console.error("Multiview Stream Socket Error. Do you have a Display instance open to receive this stream?");
+        }
+        tryConnect();
     });
 
     tryConnect();
@@ -85,9 +94,7 @@ function Streamer(name, channel) {
             if (retryCount < timeOut) {
                 socket.connect(socketPath);
                 retryCount += reconnectInterval;
-            } else {
-                // _this.emit('error', new Error('Timeout'));
-            }
+            } else {}
 
         }, reconnectInterval);
     }
@@ -102,19 +109,18 @@ Streamer.prototype.exit = function(code) {
     this.exiting = code;
 
     if (this.connected === true) {
-        this.emit('exit', code);
         this.controller.end();
     }
 };
 
 Streamer.prototype.writeToStream = function(data) {
 
-    if (this.socket.writable === true) {
-        if (data !== '') {
+    if (data !== '') {
+        if (this.connected === true) {
             this.controller.write(data);
+        } else {
+            this.lineQueue.push(data);
         }
-    } else {
-        this.lineQueue.push(data);
     }
 };
 
