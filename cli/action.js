@@ -4,6 +4,7 @@ var keypress = require('keypress');
 var MultiView = require('../main');
 var Server = require('./Server');
 var Streamer = require('./Streamer');
+var Spawn = require('../lib/Spawn');
 
 
 module.exports = exports = function(args, flags) {
@@ -12,14 +13,15 @@ module.exports = exports = function(args, flags) {
         unparsed_args,
         channel = flags.channel || 'multiview_main';
 
-    var mv = new MultiView(flags);
 
     if (flags.help || flags.version) {
         // don't do anything if help selected
     } else if (flags.stream) {
 
-        var name = typeof flags.stream === 'string' ? flags.stream : 'PID:' + process.pid;
-        var stdin_streamer = new Streamer(name, channel);
+        var name = typeof flags.stream === 'string' ? flags.stream : 'PID:' + process.pid,
+            stdin_streamer = new Streamer(name, channel, { logConnectMessages: false }),
+            command,
+            command_args;
 
         process.stdin.pipe(stdin_streamer, {
             end: false
@@ -32,15 +34,22 @@ module.exports = exports = function(args, flags) {
         for (spawn_arg in args) {
 
             if (typeof args[spawn_arg]._ === 'object') {
+
                 unparsed_args = unparse(args[spawn_arg]);
-                mv.spawn(unparsed_args[0], unparsed_args.slice(1), {
-                    stream: new Streamer(unparsed_args.join(' '), channel)
-                });
+                command = unparsed_args[0];
+                command_args = unparsed_args.slice(1);
+
+                new Spawn(new Streamer(unparsed_args.join(' '), channel),
+                    command,
+                    command_args,
+                    command + (command_args ? ' ' + command_args.join(' ') : '')
+                );
             }
         }
     } else {
 
-        var server = new Server(mv, channel),
+        var mv = new MultiView(flags),
+            server = new Server(mv, channel),
             exitCount = 0,
             exitCode = 0,
             autoexit = flags.autoexit !== undefined ? (typeof flags.autoexit === 'number' ? flags.autoexit : 500) : false;
