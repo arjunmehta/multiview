@@ -51,6 +51,8 @@ function Streamer(name, channel, opts) {
             console.log('Multiview Stream [', name, '] connected to Display.');
         }
 
+        _this.emit('socketBegun');
+
         _this.controller.pipe(socket);
 
         retryCount = 0;
@@ -75,7 +77,7 @@ function Streamer(name, channel, opts) {
         if (logConnectMessages === true) {
             console.log('Multiview Stream [', name, '] Ended');
         }
-        process.exit(0);
+        _this.emit('socketEnded');
     });
 
     socket.on('error', function(err) {
