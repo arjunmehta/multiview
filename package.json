@@ -1,6 +1,6 @@
 {
     "name": "multiview",
-    "version": "2.0.6",
+    "version": "2.1.0",
     "description": "Neatly view the output of multiple spawned processes.",
     "main": "main.js",
     "scripts": {
