@@ -23,7 +23,8 @@ function Streamer(name, channel, opts) {
         lineQueue = [],
         socket = new net.Socket(),
         socketPath = __dirname + '/' + channel + '.sock',
-        logConnectMessages = opts.logConnectMessages !== undefined ? opts.logConnectMessages : true;
+        logConnectMessages = opts.logConnectMessages !== undefined ? opts.logConnectMessages : true,
+        first = true;
 
     this.connected = false;
     this.exiting = false;
@@ -43,6 +44,10 @@ function Streamer(name, channel, opts) {
     });
 
     this.on('data', function(data) {
+        if (first === true) {
+            tryConnect(10);
+            first = false;
+        }
         _this.writeToStream(data);
     });
 
@@ -84,12 +89,10 @@ function Streamer(name, channel, opts) {
         if (logConnectMessages === true) {
             console.error('Multiview Stream Socket Error for [', name, ']\nDo you have a Display instance open to receive this stream?');
         }
-        tryConnect();
+        tryConnect(reconnectInterval);
     });
 
-    tryConnect();
-
-    function tryConnect() {
+    function tryConnect(reconnectDelay) {
 
         setTimeout(function() {
 
@@ -98,7 +101,7 @@ function Streamer(name, channel, opts) {
                 retryCount += reconnectInterval;
             } else {}
 
-        }, reconnectInterval);
+        }, reconnectDelay);
     }
 }
 
