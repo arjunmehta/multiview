@@ -19,14 +19,18 @@ module.exports = exports = function(args, flags) {
     } else if (flags.stream) {
 
         var name = typeof flags.stream === 'string' ? flags.stream : 'PID:' + process.pid,
-            stdin_streamer = new Streamer(name, channel, {
-                logConnectMessages: false
-            }),
             command,
             command_args,
             streamer,
+            streamers = [],
             streamerCount = 0,
             streamerEnded = 0;
+
+        var stdin_streamer = new Streamer(name, channel, {
+            logConnectMessages: false
+        });
+
+        streamers.push(stdin_streamer);
 
         process.stdin.pipe(stdin_streamer, {
             end: false
@@ -45,26 +49,31 @@ module.exports = exports = function(args, flags) {
                 command_args = unparsed_args.slice(1);
 
                 streamer = new Streamer(unparsed_args.join(' '), channel);
-
-                streamer.on('socketBegun', function() {
-                    streamerCount++;
-                });
-
-                streamer.on('socketEnded', function() {
-                    streamerEnded++;
-                    if (streamerEnded === streamerCount) {
-                        process.exit(0);
-                    }
-                });
+                streamers.push(streamer);
 
                 new Spawn(
                     streamer,
                     command,
                     command_args,
                     command + (command_args ? ' ' + command_args.join(' ') : '')
-                );                
+                );
             }
         }
+
+        for (var i = 0; i < streamers.length; i++) {
+
+            streamers[i].on('socketBegun', function() {
+                streamerCount++;
+            });
+
+            streamers[i].on('socketEnded', function() {
+                streamerEnded++;
+                if (streamerEnded === streamerCount) {
+                    process.exit(0);
+                }
+            });
+        }
+
     } else {
 
         var mv = new MultiView(flags),
