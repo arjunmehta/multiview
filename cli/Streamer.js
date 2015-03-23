@@ -38,7 +38,7 @@ function Streamer(name, channel, opts) {
 
     this.controller.on('error', function(err) {
         if (logConnectMessages === true) {
-            console.error('Multiview Streaming Error.');
+            console.error('Multiview Streaming Error for: [', name, ']');
         }
     });
 
@@ -48,7 +48,7 @@ function Streamer(name, channel, opts) {
 
     socket.on('connect', function() {
         if (logConnectMessages === true) {
-            console.log("Multiview Stream connected to Display.");
+            console.log('Multiview Stream [', name, '] connected to Display.');
         }
 
         _this.controller.pipe(socket);
@@ -73,14 +73,14 @@ function Streamer(name, channel, opts) {
 
     socket.on('end', function() {
         if (logConnectMessages === true) {
-            console.log("Multiview Stream Ended");
+            console.log('Multiview Stream [', name, '] Ended');
         }
         process.exit(0);
     });
 
     socket.on('error', function(err) {
         if (logConnectMessages === true) {
-            console.error("Multiview Stream Socket Error. Do you have a Display instance open to receive this stream?");
+            console.error('Multiview Stream Socket Error for [', name, ']\nDo you have a Display instance open to receive this stream?');
         }
         tryConnect();
     });
