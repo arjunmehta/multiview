@@ -105,7 +105,7 @@ By default, multiview runs on a channel called `multiview_main`
 ### Full Usage Information
 
 ```
-Usage: cli [command(s)] [options]
+Usage: multiview [command(s)] [options]
 
 OPTIONS
 -s, --stream [stream name]      Stream the output of this instance to a display instance. (default name: the stream's PID)
