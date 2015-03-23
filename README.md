@@ -10,11 +10,14 @@ This package provides:
 
 - **a CLI tool to spawn multiple processes and concurrently view their output.**
 - **a node/io.js module to do the same.**
-- **handles ANSI output from processes.**
-- **presents all spawned process outputs neatly into columns.**
-- **choice of display efficiency modes.**
-- **error handling and exit code transmission.**
-- **multiple instance aggregation.**
+
+And provides the ability to:
+
+- **handle ANSI output from processes.**
+- **present all spawned process outputs neatly into columns.**
+- **choose display efficiency modes.**
+- **handle process exit codes.**
+- **initiate multiple instances and aggregate their output.**
 
 There are two ways of using multiview: as a **[CLI tool](#the-cli-tool-basic-usage)**, or as a **[node/io.js module](#the-module-basic-usage)**:
 
