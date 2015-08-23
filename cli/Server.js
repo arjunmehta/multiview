@@ -72,4 +72,4 @@ function Server(main, channel) {
 }
 
 
-module.exports = exports = Server;
+module.exports = Server;

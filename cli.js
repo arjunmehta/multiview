@@ -8,8 +8,10 @@ var protogram = require('protogram');
 var help = require('protogram-help');
 var action = require('./cli/action');
 
+var indexOfPipe;
+
 var program = protogram.create({
-    optional: "command(s)",
+    optional: 'command(s)',
     action: action
 });
 
@@ -38,6 +40,13 @@ program
         description: 'Specify a channel name. (default: multiview_main)',
         default: 'multiview_main'
     });
-    
+
+
+while (process.argv.indexOf('|') > -1) {
+    indexOfPipe = process.argv.indexOf('|');
+    process.argv[indexOfPipe - 1] = process.argv[indexOfPipe - 1] + ']';
+    process.argv[indexOfPipe + 1] = '[' + process.argv[indexOfPipe + 1];
+    process.argv[indexOfPipe] = 'PIPE';
+}
 
 program.parse(process.argv);

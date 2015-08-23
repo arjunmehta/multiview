@@ -7,120 +7,146 @@ var Streamer = require('./Streamer');
 var Spawn = require('../lib/Spawn');
 
 
-module.exports = exports = function(args, flags) {
+module.exports = function(args, flags) {
 
-    var spawn_arg,
-        unparsed_args,
-        channel = flags.channel || 'multiview_main';
-
+    var channel = flags.channel || 'multiview_main';
 
     if (flags.help || flags.version) {
         // don't do anything if help selected
     } else if (flags.stream) {
-
-        var name = typeof flags.stream === 'string' ? flags.stream : 'PID:' + process.pid,
-            command,
-            command_args,
-            streamer,
-            streamers = [],
-            streamerCount = 0,
-            streamerEnded = 0;
-
-        var stdin_streamer = new Streamer(name, channel, {
-            logConnectMessages: false
-        });
-
-        streamers.push(stdin_streamer);
-
-        process.stdin.pipe(stdin_streamer, {
-            end: false
-        });
-
-        process.stdin.on('end', function() {
-            stdin_streamer.exit(0);
-        });
-
-        for (spawn_arg in args) {
-
-            if (typeof args[spawn_arg]._ === 'object') {
-
-                unparsed_args = unparse(args[spawn_arg]);
-                command = unparsed_args[0];
-                command_args = unparsed_args.slice(1);
-
-                streamer = new Streamer(unparsed_args.join(' '), channel);
-                streamers.push(streamer);
-
-                new Spawn(
-                    streamer,
-                    command,
-                    command_args,
-                    command + (command_args ? ' ' + command_args.join(' ') : '')
-                );
-            }
-        }
-
-        for (var i = 0; i < streamers.length; i++) {
-
-            streamers[i].on('socketBegun', function() {
-                streamerCount++;
-            });
-
-            streamers[i].on('socketEnded', function() {
-                streamerEnded++;
-                if (streamerEnded === streamerCount) {
-                    process.exit(0);
-                }
-            });
-        }
-
+        setStream(args, flags, channel);
     } else {
+        setMain(args, flags, channel);
+    }
+};
 
-        var mv = new MultiView(flags),
-            server = new Server(mv, channel),
-            exitCount = 0,
-            exitCode = 0,
-            autoexit = flags.autoexit !== undefined ? (typeof flags.autoexit === 'number' ? flags.autoexit : 500) : false;
+function setStream(args, flags, channel) {
 
-        mv.on('exit', function(stream, code) {
-            exitCount++;
+    var name = typeof flags.stream === 'string' ? flags.stream : 'PID:' + process.pid;
+    var command;
+    var command_args;
+    var streamer;
+    var streamers = [];
+    var streamerCount = 0;
+    var streamerEnded = 0;
+    var unparsed_args;
 
-            if (exitCode === 0 && code !== 0) {
-                exitCode = code;
-            }
+    var stdin_streamer = new Streamer(name, channel, {
+        logConnectMessages: false
+    });
+
+    streamers.push(stdin_streamer);
+
+    process.stdin.pipe(stdin_streamer, {
+        end: false
+    });
+
+    process.stdin.on('end', function() {
+        stdin_streamer.exit(0);
+    });
+
+    for (var i = 0; i < args.length; i++) {
+
+        if (typeof args[i]._ === 'object') {
+
+            unparsed_args = unparse(args[i]);
+            command = unparsed_args[0];
+            command_args = unparsed_args.slice(1);
+
+            streamer = new Streamer(unparsed_args.join(' '), channel);
+            streamers.push(streamer);
+
+            new Spawn(
+                streamer,
+                command,
+                command_args,
+                command + (command_args ? ' ' + command_args.join(' ') : '')
+            );
+        }
+    }
+
+    for (var i = 0; i < streamers.length; i++) {
+
+        streamers[i].on('socketBegun', function() {
+            streamerCount++;
         });
 
-        if (autoexit !== false) {
-            mv.on('exit', function(stream, code) {
-                setTimeout(function() {
+        streamers[i].on('socketEnded', function() {
+            streamerEnded++;
+            if (streamerEnded === streamerCount) {
+                process.exit(0);
+            }
+        });
+    }
+}
 
-                    if (exitCount === mv.streams.length) {
-                        process.exit(exitCode);
-                    }
 
-                }, autoexit);
-            });
+function setMain(args, flags, channel) {
+    
+    var mv = new MultiView(flags);
+    var server = new Server(mv, channel);
+    var exitCount = 0;
+    var exitCode = 0;
+    var autoexit = flags.autoexit !== undefined ? (typeof flags.autoexit === 'number' ? flags.autoexit : 500) : false;
+
+    var piper;
+    var options;
+    var spawn;
+    var piper_name;
+
+    mv.on('exit', function(stream, code) {
+        exitCount++;
+
+        if (exitCode === 0 && code !== 0) {
+            exitCode = code;
         }
+    });
 
-        if (process.stdin.isTTY) {
+    if (autoexit !== false) {
+        mv.on('exit', function(stream, code) {
+            setTimeout(function() {
 
-            keypress(process.stdin);
-            process.stdin.setRawMode(true);
-
-            process.stdin.on('keypress', function(ch, key) {
-                if (key && ((key.ctrl && key.name == 'c') || key.name == 'q')) {
-                    process.stdin.pause();
+                if (exitCount === mv.streams.length) {
                     process.exit(exitCode);
                 }
-            });
-        }
 
-        for (spawn_arg in args) {
+            }, autoexit);
+        });
+    }
 
-            if (typeof args[spawn_arg]._ === 'object') {
-                unparsed_args = unparse(args[spawn_arg]);
-                mv.spawn(unparsed_args[0], unparsed_args.slice(1));
+    if (process.stdin.isTTY) {
+
+        keypress(process.stdin);
+        process.stdin.setRawMode(true);
+
+        process.stdin.on('keypress', function(ch, key) {
+            if (key && ((key.ctrl && key.name === 'c') || key.name === 'q')) {
+                process.stdin.pause();
+                process.exit(exitCode);
+            }
+        });
+    }
+
+    for (var i = args.length - 1; i >= 0; i--) {
+
+        if (typeof args[i]._ === 'object') {
+
+            options = {};
+            unparsed_args = unparse(args[i]);
+
+            if (piper) {
+                options.stdout = piper;
+                options.silent = true;
+                piper = null;
+            }
+
+            spawn = mv.spawn(unparsed_args[0], unparsed_args.slice(1), options);
+
+            if (args[i - 1] === 'PIPE') {
+                args.splice(i - 1, 1);
+                piper = spawn;
+                i--;
             }
         }
     }
-};
+}

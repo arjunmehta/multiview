@@ -12,19 +12,18 @@ function Streamer(name, channel, opts) {
 
     opts = opts || {};
 
-
     PassThrough.call(this);
 
     var _this = this;
 
-    var retryCount = 0,
-        timeOut = 10000,
-        reconnectInterval = 1000,
-        lineQueue = [],
-        socket = new net.Socket(),
-        socketPath = __dirname + '/' + channel + '.sock',
-        logConnectMessages = opts.logConnectMessages !== undefined ? opts.logConnectMessages : true,
-        first = true;
+    var retryCount = 0;
+    var timeOut = 10000;
+    var reconnectInterval = 1000;
+    var lineQueue = [];
+    var socket = new net.Socket();
+    var socketPath = __dirname + '/' + channel + '.sock';
+    var logConnectMessages = opts.logConnectMessages !== undefined ? opts.logConnectMessages : true;
+    var first = true;
 
     this.connected = false;
     this.exiting = false;
@@ -39,7 +38,7 @@ function Streamer(name, channel, opts) {
 
     this.controller.on('error', function(err) {
         if (logConnectMessages === true) {
-            console.error('Multiview Streaming Error for: [', name, ']');
+            console.error('Multiview Streaming Error for: [', name, ']', err);
         }
     });
 
@@ -64,9 +63,9 @@ function Streamer(name, channel, opts) {
         _this.connected = true;
 
         for (var i = 0; i < lineQueue.length; i++) {
-            // console.log("LINEQUEUE Process", process.pid, lineQueue[i].toString(), _this.socket.writable);
             _this.controller.write(lineQueue[i]);
         }
+
         lineQueue = [];
 
         if (_this.exiting !== false) {
@@ -87,7 +86,7 @@ function Streamer(name, channel, opts) {
 
     socket.on('error', function(err) {
         if (logConnectMessages === true) {
-            console.error('Multiview Stream Socket Error for [', name, ']\nDo you have a Display instance open to receive this stream?');
+            console.error('Multiview Stream Socket Error for [', name, ']\nDo you have a Display instance open to receive this stream?', err);
         }
         tryConnect(reconnectInterval);
     });
@@ -99,7 +98,7 @@ function Streamer(name, channel, opts) {
             if (retryCount < timeOut) {
                 socket.connect(socketPath);
                 retryCount += reconnectInterval;
-            } else {}
+            }
 
         }, reconnectDelay);
     }
@@ -130,4 +129,4 @@ Streamer.prototype.writeToStream = function(data) {
 };
 
 
-module.exports = exports = Streamer;
+module.exports = Streamer;

@@ -13,7 +13,7 @@ This package provides:
 
 And provides the ability to:
 
-- **handle ANSI output from processes.**
+- **handle ANSI color output from processes. (Currently does not support cursor position ANSI codes)**
 - **present all spawned process outputs neatly into columns.**
 - **choose display efficiency modes.**
 - **handle process exit codes.**

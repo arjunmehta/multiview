@@ -23,6 +23,8 @@
         "columns",
         "stream",
         "pipe",
+        "spawn",
+        "processes",
         "stdout"
     ],
     "author": "Arjun Mehta",

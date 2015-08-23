@@ -1,10 +1,10 @@
 var util = require('util');
+var EventEmitter = require('events').EventEmitter;
 
 var Receiver = require('./lib/Receiver');
 var Spawn = require('./lib/Spawn');
 var Stream = require('./lib/Stream');
 
-var EventEmitter = require("events").EventEmitter;
 util.inherits(MultiView, EventEmitter);
 
 
@@ -33,19 +33,23 @@ MultiView.prototype.spawn = function(command, args, opts) {
         opts = opts || {};
     }
 
+    var stdout = opts.stdout;
     var name = opts.name || command + (args ? ' ' + args.join(' ') : '');
-    var stream = opts.stream || this.stream(name);
+    var stream;
 
-    return new Spawn(stream, command, args, name);
+    if (!opts.silent) {
+        stream = opts.stream || this.stream(name, opts.silent ? true : false);
+    }
+
+    return new Spawn(stream, command, args, name, stdout);
 };
 
-MultiView.prototype.stream = function(name, opts) {
+MultiView.prototype.stream = function(name, silent) {
 
     checkReceiver(this);
-    opts = opts || {};
 
     var _this = this;
-    var stream = new Stream(this, name);
+    var stream = new Stream(this, name, silent);
 
     this.streams.push(stream);
 
@@ -63,4 +67,4 @@ function checkReceiver(mv) {
     }
 }
 
-module.exports = exports = MultiView;
+module.exports = MultiView;
