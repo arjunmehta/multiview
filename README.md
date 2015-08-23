@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/arjunmehta/multiview.svg)](https://travis-ci.org/arjunmehta/multiview)
 
-A utility to spawn multiple processes and channel their outputs into separate little column views. 
+Spawn multiple processes and channel their outputs into separate little column views. 
 
 ![columns title image](https://raw.githubusercontent.com/arjunmehta/multiview/image/image/splash.png)
 
@@ -41,6 +41,14 @@ multiview [ls -l] [node --help] [find ../ node_modules] -x 4000
 
 #### Exit Codes
 If any of the spawned processes exit with an error code other than `0`, multiview will exit with the first non-zero exit code received once all processes have completed.
+
+#### Piping within Sub-commands
+If you want to pipe together a series of commands and have the output in a single multiview column you'll need to wrap your UNIX pipe in quotes or escape with a backslash.
+
+```bash
+multiview [ls -al \| grep '^d'] [node --help] [ps auxwww '|' grep node] -x 4000
+```
+
 
 ### CLI Usage Example (UNIX Piping)
 The CLI tool also supports piping using standard UNIX piping conventions. Just pipe to a new instance of `multiview -s`/`multiview --stream` to capture its output. Then execute a final multiview instance to display. Like so:
