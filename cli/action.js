@@ -82,17 +82,14 @@ function setStream(args, flags, channel) {
 
 
 function setMain(args, flags, channel) {
-    
+
     var mv = new MultiView(flags);
     var server = new Server(mv, channel);
     var exitCount = 0;
     var exitCode = 0;
     var autoexit = flags.autoexit !== undefined ? (typeof flags.autoexit === 'number' ? flags.autoexit : 500) : false;
 
-    var piper;
-    var options;
-    var spawn;
-    var piper_name;
+    var argGroups;
 
     mv.on('exit', function(stream, code) {
         exitCount++;
@@ -127,26 +124,78 @@ function setMain(args, flags, channel) {
         });
     }
 
-    for (var i = args.length - 1; i >= 0; i--) {
+    argGroups = buildSpawnOrder(args);
+    spawnArgGroups(mv, argGroups);
+}
+
+function buildSpawnOrder(args) {
+
+    console.log("building spawn order", args);
+
+    var order = [
+        []
+    ];
+    var i = 0;
+    var j = 0;
+
+    for (i = 0; i < args.length; i++) {
 
         if (typeof args[i]._ === 'object') {
+            order[j].push(unparse(args[i]));
+        }
+        if (args[i + 1] !== 'PIPE' && i < args.length - 1) {
+            j++;
+            order[j] = [];
+        } else {
+            i++;
+        }
+    }
 
+    console.log("Ordered", order);
+
+    return order;
+}
+
+function spawnArgGroups(mv, argGroups) {
+
+    var args;
+    var unparsed_args;
+    var piper;
+    var options;
+    var piper_name;
+
+    var i;
+    var j;
+
+    for (i = 0; i < argGroups.length; i++) {
+
+        args = argGroups[i];
+        piper_name = generateName(args);
+        piper = null;
+
+        for (j = args.length - 1; j >= 0; j--) {
             options = {};
-            unparsed_args = unparse(args[i]);
+            unparsed_args = args[j];
 
             if (piper) {
                 options.stdout = piper;
                 options.silent = true;
-                piper = null;
+            } else {
+                options.name = piper_name;
             }
 
-            spawn = mv.spawn(unparsed_args[0], unparsed_args.slice(1), options);
-
-            if (args[i - 1] === 'PIPE') {
-                args.splice(i - 1, 1);
-                piper = spawn;
-                i--;
-            }
+            piper = mv.spawn(unparsed_args[0], unparsed_args.slice(1), options);
         }
     }
+}
+
+function generateName(args) {
+    var name = '';
+    var i;
+
+    for (i = 0; i < args.length; i++) {
+        name += (i > 0 ? ' | ' : '') + args[i].join(' ');
+    }
+
+    return name;
 }

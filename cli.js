@@ -41,6 +41,7 @@ program
         default: 'multiview_main'
     });
 
+console.log(process.argv);
 
 while (process.argv.indexOf('|') > -1) {
     indexOfPipe = process.argv.indexOf('|');
