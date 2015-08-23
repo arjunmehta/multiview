@@ -40,9 +40,7 @@ program
         description: 'Specify a channel name. (default: multiview_main)',
         default: 'multiview_main'
     });
-
-console.log(process.argv);
-
+    
 while (process.argv.indexOf('|') > -1) {
     indexOfPipe = process.argv.indexOf('|');
     process.argv[indexOfPipe - 1] = process.argv[indexOfPipe - 1] + ']';
