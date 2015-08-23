@@ -130,8 +130,6 @@ function setMain(args, flags, channel) {
 
 function buildSpawnOrder(args) {
 
-    console.log("building spawn order", args);
-
     var order = [
         []
     ];
@@ -150,8 +148,6 @@ function buildSpawnOrder(args) {
             i++;
         }
     }
-
-    console.log("Ordered", order);
 
     return order;
 }
