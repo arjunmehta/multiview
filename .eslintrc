@@ -108,9 +108,6 @@
     "quotes": [
       2, "single", "avoid-escape"
     ],
-    // "camelcase": [2, {
-    //   "properties": "never"
-    // }],
     "comma-spacing": [2, {
       "before": false,
       "after": true
