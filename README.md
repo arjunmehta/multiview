@@ -9,7 +9,7 @@ Spawn multiple processes and channel their outputs into separate little column v
 This package provides:
 
 - **a CLI tool to spawn multiple processes and concurrently view their output.**
-- **a node/io.js module to do the same.**
+- **a Node module to do the same.**
 
 And provides the ability to:
 
@@ -19,7 +19,7 @@ And provides the ability to:
 - **handle process exit codes.**
 - **initiate multiple instances and aggregate their output.**
 
-There are two ways of using multiview: as a **[CLI tool](#the-cli-tool-basic-usage)**, or as a **[node/io.js module](#the-module-basic-usage)**:
+There are two ways of using multiview: as a **[CLI tool](#the-cli-tool-basic-usage)**, or as a **[Node module](#the-module-basic-usage)**:
 
 ## The CLI Tool: Basic Usage
 
@@ -138,7 +138,7 @@ OPTIONS
 
 ## The Module: Basic Usage
 
-Multiview can also be used as a module in your node/io.js projects. The module can spawn new processes (using the `child_process.spawn` syntax) and will display their output in a neat column view.
+Multiview can also be used as a module in your Node projects. The module can spawn new processes (using the `child_process.spawn` syntax) and will display their output in a neat column view.
 
 ### Installation
 ```bash
