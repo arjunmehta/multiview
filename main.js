@@ -10,6 +10,8 @@ util.inherits(MultiView, EventEmitter);
 
 function MultiView(opts) {
 
+    var _this = this;
+
     if (!(this instanceof MultiView)) {
         return new MultiView(opts);
     }
