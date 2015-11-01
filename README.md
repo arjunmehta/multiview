@@ -77,6 +77,14 @@ multiview [ls -l] [node --help] [find ../ node_modules] -x 5000
 ```
 
 
+### Print Logs
+#### Option: --print, -p
+
+By default, multiview will exit back to the terminal view before it was launched, hiding all column output.
+
+When the `print` option is set, multiview will print the output of each process linearly to the terminal. This is useful for troubleshooting during testing.
+
+
 ### Efficient Mode
 #### Option: --efficient, -e
 
