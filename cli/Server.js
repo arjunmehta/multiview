@@ -2,8 +2,7 @@ var util = require('util');
 var net = require('net');
 var fs = require('fs');
 
-var headerfooter = require('stream-headerfooter');
-
+var EventTransmitter = require('event-transmitter');
 var EventEmitter = require("events").EventEmitter;
 util.inherits(Server, EventEmitter);
 
@@ -42,8 +41,8 @@ function Server(main, channel) {
 
     server.on('connection', function(socket) {
 
-        var stream,
-            pipet = new headerfooter.In();
+        var stream;
+        var pipet = new EventTransmitter();
 
         socket.pipe(pipet);
 

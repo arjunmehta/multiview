@@ -2,8 +2,7 @@ var net = require('net');
 var util = require('util');
 var stream = require('stream');
 
-var headerfooter = require('stream-headerfooter');
-
+var EventTransmitter = require('event-transmitter');
 var PassThrough = stream.PassThrough || require('readable-stream').PassThrough;
 util.inherits(Streamer, PassThrough);
 
@@ -30,11 +29,8 @@ function Streamer(name, channel, opts) {
     this.socket = socket;
     this.lineQueue = lineQueue;
 
-    this.controller = new headerfooter.Out({
-        header: {
-            id: name
-        }
-    });
+    this.controller = new EventTransmitter();
+    this.controller.transmit('header', {id: name });
 
     this.controller.on('error', function(err) {
         if (logConnectMessages === true) {
