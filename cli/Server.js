@@ -3,71 +3,68 @@ var net = require('net');
 var fs = require('fs');
 
 var EventTransmitter = require('event-transmitter');
-var EventEmitter = require("events").EventEmitter;
+var EventEmitter = require('events').EventEmitter;
+
 util.inherits(Server, EventEmitter);
 
 
 // Main Constructor
 
 function Server(main, channel) {
+  EventEmitter.call(this);
 
-    EventEmitter.call(this);
+  var socketPath = __dirname + '/' + channel + '.sock';
+  var server = net.createServer();
 
-    var socketPath = __dirname + '/' + channel + '.sock',
-        server = net.createServer();
+  server.on('error', function(e) {
+    if (e.code === 'EADDRINUSE') {
+      var clientSocket = new net.Socket({
+        readableObjectMode: true
+      });
 
-    server.on('error', function(e) {
-
-        if (e.code == 'EADDRINUSE') {
-
-            var clientSocket = new net.Socket({
-                readableObjectMode: true
-            });
-
-            clientSocket.on('error', function(e) {
-                if (e.code == 'ECONNREFUSED') {
-                    fs.unlinkSync(socketPath);
-                    server.listen(socketPath, function() {
-                        console.log('server recovered');
-                    });
-                }
-            });
-
-            clientSocket.connect({
-                path: socketPath
-            }, function() {});
+      clientSocket.on('error', function(e) {
+        if (e.code === 'ECONNREFUSED') {
+          fs.unlinkSync(socketPath);
+          server.listen(socketPath, function() {
+            console.log('server recovered');
+          });
         }
+      });
+
+      clientSocket.connect({
+        path: socketPath
+      }, function() {});
+    }
+  });
+
+  server.on('connection', function(socket) {
+    var stream;
+    var pipet = new EventTransmitter();
+
+    socket.pipe(pipet);
+
+    pipet.on('header', function(header) {
+      stream = main.stream(header.id);
+      pipet.pipe(stream);
     });
 
-    server.on('connection', function(socket) {
-
-        var stream;
-        var pipet = new EventTransmitter();
-
-        socket.pipe(pipet);
-
-        pipet.on('header', function(header) {
-            stream = main.stream(header.id);
-            pipet.pipe(stream);
-        });
-
-        pipet.on('footer', function(footer) {
-            if (footer.exitCode !== undefined) {
-                stream.exit(footer.exitCode);
-            }
-        });
+    pipet.on('footer', function(footer) {
+      if (footer.exitCode !== undefined) {
+        stream.exit(footer.exitCode);
+      }
     });
+  });
 
-    server.listen(socketPath);
+  server.listen(socketPath);
 
-    process.on('exit', function(code) {
-        console.log("closing server at:", server.address());
-        try {
-            server.close();
-        } catch (e) {
-            console.log("cannot close server, may be already closed");
-        }
-    });
+  process.on('exit', function(code) {
+    console.log('closing server at:', server.address());
+    try {
+      server.close();
+    } catch (e) {
+      console.log('cannot close server, may be already closed');
+    }
+  });
 }
 
 

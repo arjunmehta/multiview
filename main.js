@@ -9,64 +9,57 @@ util.inherits(MultiView, EventEmitter);
 
 
 function MultiView(opts) {
+  if (!(this instanceof MultiView)) {
+    return new MultiView(opts);
+  }
 
-    var _this = this;
-
-    if (!(this instanceof MultiView)) {
-        return new MultiView(opts);
-    }
-
-    EventEmitter.call(this);
-
-    this.opts = opts || {};
-
-    this.receiver = null;
-    this.streams = [];
+  EventEmitter.call(this);
+  this.opts = opts || {};
+  this.receiver = null;
+  this.streams = [];
 }
 
 MultiView.prototype.spawn = function(command, args, opts) {
+  checkReceiver(this);
 
-    checkReceiver(this);
+  if (!Array.isArray(args) && typeof args === 'object') {
+    opts = args;
+    args = [];
+  } else {
+    opts = opts || {};
+  }
 
-    if (!Array.isArray(args) && typeof args === 'object') {
-        opts = args;
-        args = [];
-    } else {
-        opts = opts || {};
-    }
+  var stdout = opts.stdout;
+  var name = opts.name || command + (args ? ' ' + args.join(' ') : '');
+  var stream;
 
-    var stdout = opts.stdout;
-    var name = opts.name || command + (args ? ' ' + args.join(' ') : '');
-    var stream;
+  if (!opts.silent) {
+    stream = opts.stream || this.stream(name, opts.silent ? true : false);
+  }
 
-    if (!opts.silent) {
-        stream = opts.stream || this.stream(name, opts.silent ? true : false);
-    }
-
-    return new Spawn(stream, command, args, name, stdout);
+  return new Spawn(stream, command, args, name, stdout);
 };
 
 MultiView.prototype.stream = function(name, silent) {
+  checkReceiver(this);
 
-    checkReceiver(this);
+  var _this = this;
+  var stream = new Stream(this, name, silent);
 
-    var _this = this;
-    var stream = new Stream(this, name, silent);
+  this.streams.push(stream);
 
-    this.streams.push(stream);
+  stream.on('exit', function(code) {
+    _this.emit('exit', stream, code);
+  });
 
-    stream.on('exit', function(code) {
-        _this.emit('exit', stream, code);
-    });
-
-    return stream;
+  return stream;
 };
 
 
 function checkReceiver(mv) {
-    if (mv.receiver === null) {
-        mv.receiver = new Receiver(mv.opts);
-    }
+  if (mv.receiver === null) {
+    mv.receiver = new Receiver(mv.opts);
+  }
 }
 
 module.exports = MultiView;
