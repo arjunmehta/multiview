@@ -1,6 +1,7 @@
 var util = require('util');
 var net = require('net');
 var fs = require('fs');
+var path = require('path');
 
 var EventTransmitter = require('event-transmitter');
 var EventEmitter = require('events').EventEmitter;
@@ -13,7 +14,7 @@ util.inherits(Server, EventEmitter);
 function Server(main, channel) {
   EventEmitter.call(this);
 
-  var socketPath = __dirname + '/' + channel + '.sock';
+  var socketPath = path.join(__dirname, '/' + channel + '.sock');
   var server = net.createServer();
 
   server.on('error', function(e) {
@@ -33,7 +34,7 @@ function Server(main, channel) {
 
       clientSocket.connect({
         path: socketPath
-      }, function() {});
+      });
     }
   });
 

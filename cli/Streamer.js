@@ -1,5 +1,6 @@
 var net = require('net');
 var util = require('util');
+var path = require('path');
 var stream = require('stream');
 
 var EventTransmitter = require('event-transmitter');
@@ -18,7 +19,7 @@ function Streamer(name, channel, opts) {
   var reconnectInterval = 1000;
   var lineQueue = [];
   var socket = new net.Socket();
-  var socketPath = __dirname + '/' + channel + '.sock';
+  var socketPath = path.join(__dirname, '/' + channel + '.sock');
   var logConnectMessages = opts.logConnectMessages !== undefined ? opts.logConnectMessages : true;
   var first = true;
 
