@@ -20,7 +20,7 @@ module.exports = function(args, flags) {
 };
 
 function setStream(args, flags, channel) {
-  var name = typeof flags.stream === 'string' ? flags.stream : 'PID:' + process.pid;
+  var name = typeof flags.stream !== 'boolean' ? flags.stream.toString() : 'PID:' + process.pid;
   var command;
   var commandArgs;
   var streamer;
