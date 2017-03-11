@@ -63,6 +63,9 @@ function Streamer(name, channel, opts) {
     lineQueue = [];
 
     if (_this.exiting !== false) {
+      _this.controller.transmit('footer', {
+        exitCode: _this.exiting
+      });
       _this.controller.end();
     }
   });
@@ -96,10 +99,6 @@ function Streamer(name, channel, opts) {
 }
 
 Streamer.prototype.exit = function(code) {
-  this.controller.footer = {
-    exitCode: code
-  };
-
   this.exiting = code;
 
   if (this.connected === true) {
