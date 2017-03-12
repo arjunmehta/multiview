@@ -45,17 +45,23 @@ function Streamer(name, channel, opts) {
     _this.writeToStream(data);
   });
 
+  _this.controller.on('drain', function() {
+    if (_this.exiting !== false) {
+      _this.controller.transmit('footer', {
+        exitCode: _this.exiting
+      });
+    }
+  });
+
   socket.on('connect', function() {
     if (logConnectMessages === true) {
       console.log('Multiview Stream [', name, '] connected to Display.');
     }
 
-    _this.emit('socketBegun');
-
-    _this.controller.pipe(socket);
-
     retryCount = 0;
     _this.connected = true;
+    _this.controller.pipe(socket);
+    _this.emit('socketBegun');
 
     for (var i = 0; i < lineQueue.length; i++) {
       _this.controller.write(lineQueue[i]);
@@ -67,7 +73,6 @@ function Streamer(name, channel, opts) {
       _this.controller.transmit('footer', {
         exitCode: _this.exiting
       });
-      _this.controller.end();
     }
   });
 
@@ -101,16 +106,12 @@ function Streamer(name, channel, opts) {
 
 Streamer.prototype.exit = function(code) {
   this.exiting = code;
-
-  if (this.connected === true) {
-    this.controller.end();
-  }
 };
 
 Streamer.prototype.writeToStream = function(data) {
   if (data !== '') {
     if (this.connected === true) {
-      this.controller.write(data);
+      this.controller.write(data, function() {});
     } else {
       this.lineQueue.push(data);
     }
