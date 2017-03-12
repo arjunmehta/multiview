@@ -40,17 +40,16 @@ function Server(main, channel) {
 
   server.on('connection', function(socket) {
     var stream;
-    var events = new EventTransmitter();
-    var eventsStream = events.listen();
+    var eventListener = new EventTransmitter.Listener();
 
-    socket.pipe(eventsStream);
+    socket.pipe(eventListener);
 
-    events.on('header', function(header) {
+    eventListener.on('header', function(header) {
       stream = main.stream(header.id);
-      eventsStream.pipe(stream);
+      eventListener.pipe(stream);
     });
 
-    events.on('footer', function(footer) {
+    eventListener.on('footer', function(footer) {
       if (footer.exitCode !== undefined) {
         stream.exit(footer.exitCode);
       }
