@@ -116,8 +116,7 @@ Instead of displaying the output of spawned processes, stream instances of multi
 Essentially, you can create multiple stream instances of multiview, spawning multiple processes each, and have their output display on a single receiving multiview instance!! This is great for scalability.
 
 ```bash
-multiview [ls -l] [node --help] [find ../ node_modules] -s &\
-multiview
+multiview [ls -l] [node --help] [find ../ node_modules] -s & multiview
 ```
 
 ### Channels
@@ -126,8 +125,7 @@ multiview
 Channels allow you to have different sets of processes going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
 
 ```bash
-multiview [ls -l] [node --help] [find ../ node_modules] -s -c channelA &/
-multiview -c channelA
+multiview [ls -l] [node --help] [find ../ node_modules] -s -c channelA & multiview -c channelA
 ```
 
 By default, multiview runs on a channel called `multiview_main`
@@ -185,7 +183,7 @@ spawn.stdout.pipe(mvstream)
 ```
 
 #### Exit Streams
-Multiview streams have a special `exit()` method that takes an `code` parameter. This will exit the stream and multiview will emit an `exit` event with the exit code. This can let you pass exit codes from `child_process.spawn` instances for example, or from remote streams or events that might use similar exit codes.
+Multiview streams have a special `exit()` method that takes an `code` parameter. This will exit the stream and multiview will emit an `exit` event with the exit code. This can let you pass exit codes from `child_process.spawn` instance`s for example, or from remote streams or events that might use similar exit codes.
 
 ```javascript
 spawn.on('exit', function(code){
