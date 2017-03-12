@@ -28,11 +28,16 @@ program
     description: 'Exit automatically after all processes have finished. (default delay: 500ms)',
     default: 'multiview_main'
   })
+  .option('--print', {
+    description: 'Linearly print results of each stream after exiting.'
+  })
   .option('--efficient', {
     description: 'Render process output efficiently – great for remote connections'
   })
-  .option('--print', {
-    description: 'Linearly print results of each stream after exiting.'
+  .option('--buffer', {
+    required: 'buffer size',
+    description: 'Limit the number of lines buffered for each process. (default: 2000)',
+    default: 2000
   })
   .option('--stream', {
     optional: 'stream name',
@@ -42,11 +47,6 @@ program
     required: 'channel name',
     description: 'Specify a channel name. (default: multiview_main)',
     default: 'multiview_main'
-  })
-  .option('--buffer', {
-    required: 'buffer size',
-    description: 'Limit the number of lines buffered for each process. (default: 2000)',
-    default: 2000
   });
 
 while (process.argv.indexOf('|') > -1) {

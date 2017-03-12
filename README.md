@@ -96,6 +96,17 @@ However, if you are connected remotely and bandwidth is an issue, or if you are 
 multiview [ls -l] [node --help] [find ../ node_modules] -e
 ```
 
+### Buffer Size
+#### Option: --buffer, -b
+
+The number of lines that are buffered to be rendered at a time is set using the `buffer` option. This can speed up the printing of really long outputs. The same value sets the number of lines that are printed with the `print` option.
+
+If you have a lot of output and want to print it all, you can set this value to a very high number, but this could greatly slow down the rendering speed of the output.
+
+```bash
+multiview [ls -l] [node --help] [find ../ node_modules] -b 200
+```
+
 
 ### Stream Instances
 #### Option: --stream, -s <stream name>
@@ -127,12 +138,14 @@ By default, multiview runs on a channel called `multiview_main`
 Usage: multiview [command(s)] [options]
 
 OPTIONS
+-x, --autoexit [delay]          Exit automatically after all processes have finished. (default delay: 500ms)              
+-p, --print                     Linearly print results of each stream after exiting.                                      
+-e, --efficient                 Render process output efficiently – great for remote connections                          
+-b, --buffer <buffer size>      Limit the number of lines buffered for each process. (default: 2000)                      
 -s, --stream [stream name]      Stream the output of this instance to a display instance. (default name: the stream's PID)
--c, --channel <channel name>    Specify a channel name. (default: multiview_main)
--x, --autoexit [delay]          Exit automatically after all processes have finished. (default delay: 500ms)
--e, --efficient                 Render process output efficiently – great for remote connections
--h, --help                      Display usage information
--V, --version                   Display current version
+-c, --channel <channel name>    Specify a channel name. (default: multiview_main)                                         
+-h, --help                      Display usage information                                                                 
+-V, --version                   Display current version  
 ```
 
 
