@@ -4,7 +4,8 @@
   "description": "Neatly view the output of multiple spawned processes.",
   "main": "main.js",
   "scripts": {
-    "test": "nodeunit test/test.js"
+    "test": "nodeunit test/test.js && node cli [ls -la] [npm run lsla] -x 5000",
+    "lsla": "ls -la"
   },
   "bin": {
     "multiview": "cli.js"
