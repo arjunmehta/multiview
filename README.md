@@ -29,7 +29,7 @@ npm install -g multiview
 ```
 
 ### CLI Usage Example
-The CLI tool can spawn multiple processes and will separate their outputs into columns. Just execute the cli command `multiview` and place each sub-command into their own square brackets `[]`.
+The CLI tool can spawn multiple processes and will separate their outputs into columns. Just execute the cli command `multiview` and place each sub-command into its own square brackets `[]`.
 
 The following example will spawn 3 processes, and exit automatically, 4 seconds after the last process exits:
 
