@@ -7,18 +7,6 @@ var Streamer = require('./Streamer');
 var Spawn = require('../lib/Spawn');
 
 
-module.exports = function(args, flags) {
-  var channel = flags.channel || 'multiview_main';
-
-  if (flags.help || flags.version) {
-    // don't do anything if help selected
-  } else if (flags.stream) {
-    setStream(args, flags, channel);
-  } else {
-    setMain(args, flags, channel);
-  }
-};
-
 function setStream(args, flags, channel) {
   var name = typeof flags.stream !== 'boolean' ? flags.stream.toString() : 'PID:' + process.pid;
   var command;
@@ -183,3 +171,16 @@ function generateName(args) {
 
   return name;
 }
+
+
+module.exports = function(args, flags) {
+  var channel = flags.channel || 'multiview_main';
+
+  if (flags.help || flags.version) {
+    // don't do anything if help selected
+  } else if (flags.stream) {
+    setStream(args, flags, channel);
+  } else {
+    setMain(args, flags, channel);
+  }
+};
