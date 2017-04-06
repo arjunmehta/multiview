@@ -4,7 +4,7 @@
 
 Spawn multiple processes and channel their outputs into separate little column views. 
 
-![columns title image](https://raw.githubusercontent.com/arjunmehta/multiview/image/image/splash.png)
+![multiview title image](https://raw.githubusercontent.com/arjunmehta/multiview/image/image/splash.png)
 
 This package provides:
 
