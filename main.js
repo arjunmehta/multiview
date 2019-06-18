@@ -34,7 +34,7 @@ MultiView.prototype.spawn = function(command, args, opts) {
   var stream;
 
   if (!opts.silent) {
-    stream = opts.stream || this.stream(name, opts.silent ? true : false);
+    stream = opts.stream || this.stream(name, !!opts.silent);
   }
 
   return new Spawn(stream, command, args, name, stdout);
