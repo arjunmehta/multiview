@@ -2,9 +2,9 @@ var unparse = require('unparse-args');
 var keypress = require('keypress');
 
 var MultiView = require('../main');
-var Server = require('./Server');
 var Streamer = require('./Streamer');
 var Spawn = require('../lib/Spawn');
+var startServer = require('./startServer');
 
 
 function setStream(args, flags, channel) {
@@ -67,12 +67,12 @@ function setStream(args, flags, channel) {
 
 function setMain(args, flags, channel) {
   var mv = new MultiView(flags);
-  var server = new Server(mv, channel);
   var exitCount = 0;
   var exitCode = 0;
   var autoexit = flags.autoexit !== undefined ? (typeof flags.autoexit === 'number' ? flags.autoexit : 500) : false;
-
   var argGroups;
+
+  startServer(mv, channel);
 
   mv.on('exit', function(stream, code) {
     exitCount++;
