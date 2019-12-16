@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/arjunmehta/multiview.svg)](https://travis-ci.org/arjunmehta/multiview)
 
-Spawn multiple processes and channel their outputs into separate little column views. 
+Spawn multiple processes and channel their outputs into separate little column views.
 
 ![multiview title image](https://raw.githubusercontent.com/arjunmehta/multiview/image/image/splash.png)
 
@@ -34,7 +34,7 @@ The CLI tool can spawn multiple processes and will separate their outputs into c
 The following example will spawn 3 processes, and exit automatically, 4 seconds after the last process exits:
 
 ```bash
-multiview [ls -l] [node --help] [find ../ node_modules] -x 4000
+multiview [ ls -l ] [ node --help ] [ find ../ node_modules ] -x 4000
 ```
 
 <img src="https://raw.githubusercontent.com/arjunmehta/multiview/image/image/screenshot.gif" alt="screenshot image" width="100%" border="0"/>
@@ -46,7 +46,7 @@ If any of the spawned processes exit with an error code other than `0`, multivie
 If you want to pipe together a series of commands and have the output in a single multiview column you'll need to wrap your UNIX pipe in quotes or escape with a backslash.
 
 ```bash
-multiview [ls -al \| grep '^d'] [node --help] [ps auxwww '|' grep node] -x 4000
+multiview [ ls -al \| grep '^d' ] [ node --help ] [ ps auxwww '|' grep node ] -x 4000
 ```
 
 
@@ -73,7 +73,7 @@ When this option is set, multiview will automatcially exit with an error code. T
 Optionally provide a number (in milliseconds) for how long to wait to exit after the last process has finished.
 
 ```bash
-multiview [ls -l] [node --help] [find ../ node_modules] -x 5000
+multiview [ ls -l ] [ node --help ] [ find ../ node_modules ] -x 5000
 ```
 
 
@@ -93,7 +93,7 @@ By default, when the output column of a process gets filled to the bottom, all p
 However, if you are connected remotely and bandwidth is an issue, or if you are spawning processes with a lot of output that can be taxing to print to the terminal – there are multiple processes writing non-linearly to the screen after all – it is recommended you set multiview to `efficient` mode. This option resets the cursor at the top of the column when output reaches the bottom of the output column.
 
 ```bash
-multiview [ls -l] [node --help] [find ../ node_modules] -e
+multiview [ ls -l ] [ node --help ] [ find ../ node_modules ] -e
 ```
 
 ### Buffer Size
@@ -104,7 +104,7 @@ The number of lines that are buffered to be rendered at a time is set using the 
 If you have a lot of output and want to print it all, you can set this value to a very high number, but this could greatly slow down the rendering speed of the output.
 
 ```bash
-multiview [ls -l] [node --help] [find ../ node_modules] -b 200
+multiview [ ls -l ] [ node --help ] [ find ../ node_modules ] -b 200
 ```
 
 
@@ -116,7 +116,7 @@ Instead of displaying the output of spawned processes, stream instances of multi
 Essentially, you can create multiple stream instances of multiview, spawning multiple processes each, and have their output display on a single receiving multiview instance!! This is great for scalability.
 
 ```bash
-multiview [ls -l] [node --help] [find ../ node_modules] -s & multiview
+multiview [ ls -l ] [ node --help ] [ find ../ node_modules ] -s & multiview
 ```
 
 ### Channels
@@ -125,7 +125,7 @@ multiview [ls -l] [node --help] [find ../ node_modules] -s & multiview
 Channels allow you to have different sets of processes going to different display instances. To use channels, both your stream instances and display instance need to be set to the same channel:
 
 ```bash
-multiview [ls -l] [node --help] [find ../ node_modules] -s -c channelA & multiview -c channelA
+multiview [ ls -l ] [ node --help ] [ find ../ node_modules ] -s -c channelA & multiview -c channelA
 ```
 
 By default, multiview runs on a channel called `multiview_main`
@@ -136,14 +136,14 @@ By default, multiview runs on a channel called `multiview_main`
 Usage: multiview [command(s)] [options]
 
 OPTIONS
--x, --autoexit [delay]          Exit automatically after all processes have finished. (default delay: 500ms)              
--p, --print                     Linearly print results of each stream after exiting.                                      
--e, --efficient                 Render process output efficiently – great for remote connections                          
--b, --buffer <buffer size>      Limit the number of lines buffered for each process. (default: 2000)                      
+-x, --autoexit [delay]          Exit automatically after all processes have finished. (default delay: 500ms)
+-p, --print                     Linearly print results of each stream after exiting.
+-e, --efficient                 Render process output efficiently – great for remote connections
+-b, --buffer <buffer size>      Limit the number of lines buffered for each process. (default: 2000)
 -s, --stream [stream name]      Stream the output of this instance to a display instance. (default name: the stream's PID)
--c, --channel <channel name>    Specify a channel name. (default: multiview_main)                                         
--h, --help                      Display usage information                                                                 
--V, --version                   Display current version  
+-c, --channel <channel name>    Specify a channel name. (default: multiview_main)
+-h, --help                      Display usage information
+-V, --version                   Display current version
 ```
 
 
@@ -177,7 +177,7 @@ mv.spawn('find', ['../', 'node_modules'])
 In addition to spawning processes, you can also create special named streams on your multiview instance. You can write/pipe any text data to these streams and they will show up in their own column.
 
 ```javascript
-var mvstream = mv.stream("List contents of current directory")
+var mvstream = mv.stream('List contents of current directory')
 var spawn = child_process.spawn('ls');
 spawn.stdout.pipe(mvstream)
 ```
@@ -196,7 +196,7 @@ When a process or a stream exits, an `exit` event is emitted on the main multivi
 
 ```javascript
 mv.on('exit', function(stream, code){
-    console.log("process stream exited with code:", code)
+    console.log('process stream exited with code:', code)
 })
 ```
 
