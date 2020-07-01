@@ -19,7 +19,7 @@ function startServer(main, channel) {
 
       clientSocket.on('error', function(e) {
         if (e.code === 'ECONNREFUSED') {
-          fs.unlinkSync(socketPath);
+          fs.existsSync(socketPath) && fs.unlinkSync(socketPath);
           server.listen(socketPath, function() {
             console.log('server recovered');
           });
