@@ -45,7 +45,7 @@
     "unparse-args": "1.0.1"
   },
   "devDependencies": {
-    "eslint": "4.18.2",
+    "eslint": "9.2.0",
     "eslint-config-standard": "7.0.1",
     "eslint-plugin-promise": "3.5.0",
     "eslint-plugin-standard": "2.1.1",
